@@ -1,0 +1,11 @@
+<p>This is the view_alignments view.</p>
+
+<div ng-controller="ListQueriesCtrl">
+
+<button ng-click="getQueries()">Get Query Ids</button>
+
+<ul>
+<li ng-repeat="query_id in query_ids">{{query_id}}</li>
+</ul>
+
+</div>
