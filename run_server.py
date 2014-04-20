@@ -4,10 +4,12 @@ Run the server
 """
 import os
 import sys
+import logging
+logging.basicConfig(level=logging.INFO)
 
 # sys.path includes 'server/lib' due to appengine_config.py
 import flask
-from flask import Flask, Blueprint
+from flask import Flask, Blueprint, redirect
 from server.api import api_blueprint
 from server.config import DevelopmentConfig
 import server.db
@@ -20,6 +22,7 @@ app.config.from_object(DevelopmentConfig)
 
 @app.route('/')
 def root():
+  logging.info("Request for path: %s"%"/")
   return app.send_static_file('index.html')
 
 if __name__ == '__main__':

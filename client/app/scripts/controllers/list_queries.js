@@ -2,19 +2,28 @@
 
 angular.module('malignerViewerApp')
 
-  .controller('ListQueriesCtrl', function ($scope, $http) {
+  .controller('ListQueriesCtrl', function ($scope, $http, $location, queryIdDB) {
 
-    $scope.query_ids = []
+    $scope.queryIds = [];
+    $scope.queryMapName = '';
 
     $scope.getQueries = function() {
 
-      console.log("Making get queries request...");
+      var queryIds = queryIdDB.getIds();
+      if (queryIds.length) {
+        $scope.queryIds = queryIds;
+        return queryIds;
+      }
+
+      console.log('Making get queries request...');
+
       $http({method: 'GET', url: 'http://localhost:5000/api/queries'}).
         success(function(data, status, headers, config) {
       // this callback will be called asynchronously
       // when the response is available
-        console.log("Got data", data);
-        $scope.query_ids = data.query_id;
+        console.log('Got data', data);
+        $scope.queryIds = data.query_id;
+        queryIdDB.setIds(data.query_id);
       }).
       error(function(data, status, headers, config) {
       // called asynchronously if an error occurs
@@ -22,5 +31,13 @@ angular.module('malignerViewerApp')
       });
 
     };
+
+    $scope.goToMap = function() {
+      if ($scope.queryMapName) {
+        $location.url('#/query/' + $scope.queryMapName);
+      }
+    };
+
+    $scope.getQueries();
 
   });

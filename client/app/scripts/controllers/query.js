@@ -1,0 +1,61 @@
+'use strict';
+
+angular.module('malignerViewerApp')
+
+  .controller('QueryCtrl', function ($scope, $routeParams, $http, mapDB) {
+
+    $scope.routeParams = $routeParams;
+
+    $scope.queryId = $routeParams.queryId;
+    console.log('Have route params: ', $routeParams);
+
+    $scope.status_message = 'Retrieving alignments...';
+
+    $scope.getAlignments = function() {
+
+      console.log('Getting alignments for query ' + $scope.queryId);
+      $http({method: 'GET', url: 'http://localhost:5000/api/alignments/' + $scope.queryId}).
+        success(function(data, status, headers, config) {
+        // this callback will be called asynchronously
+        // when the response is available
+
+        $scope.alignments = data.alignments;
+        $scope.status_message = 'Retrieved ' + $scope.alignments.length + ' alignments.';
+        console.log(data.alignments);
+      }).
+      error(function(data, status, headers, config) {
+      // called asynchronously if an error occurs
+      // or server returns response with an error status.
+        $scope.status_message = 'Failed to retrieve alignments.';
+      });
+    };
+
+    $scope.getQueryMap = function() {
+
+      console.log('Getting query Map ' + $scope.queryId);
+      $http({method: 'GET', url: 'http://localhost:5000/api/queries/' + $scope.queryId}).
+        success(function(data, status, headers, config) {
+        // this callback will be called asynchronously
+        // when the response is available
+
+        $scope.queryMap = data.query_map;
+        $scope.map = $scope.queryMap;
+        console.log($scope.queryMap);
+        mapDB.addMap($scope.queryMap);
+      }).
+      error(function(data, status, headers, config) {
+      // called asynchronously if an error occurs
+      // or server returns response with an error status.
+        $scope.status_message = 'Failed to retrieve alignments.';
+      });
+    };
+
+    $scope.getReferenceMaps = function() {
+
+    };
+    
+    $scope.getQueryMap();
+    $scope.getAlignments();
+
+
+  });

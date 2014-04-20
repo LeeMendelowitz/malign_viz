@@ -1,0 +1,15 @@
+<p>This is the view_alignments view.</p>
+
+<div ng-controller="ListQueriesCtrl">
+
+
+<input type="text" ng-model="queryMapName">
+<button ng-click="goToMap()" ng-enabled="queryMapName">Go</button>
+
+<button ng-click="getQueries()">List Query Ids</button>
+
+<ul>
+<li ng-repeat="queryId in queryIds"><a ng-href="#/query/{{queryId}}">{{queryId}}</a></li>
+</ul>
+
+</div>

@@ -125,7 +125,15 @@ module.exports = function (grunt) {
           ]
         }]
       },
-      server: '.tmp'
+      server: '.tmp',
+      dev: {
+        files: [{
+          dot: true,
+          src: [
+            'dev'
+          ]
+        }]
+      },
     },
 
     // Add vendor prefixed styles
@@ -139,6 +147,14 @@ module.exports = function (grunt) {
           cwd: '.tmp/styles/',
           src: '{,*/}*.css',
           dest: '.tmp/styles/'
+        }]
+      },
+      dev: {
+        files: [{
+          expand: true,
+          cwd: 'dev/styles',
+          src: '{,*/}*.css',
+          dest: 'dev/styles'
         }]
       }
     },
@@ -288,6 +304,19 @@ module.exports = function (grunt) {
         cwd: '<%= yeoman.app %>/styles',
         dest: '.tmp/styles/',
         src: '{,*/}*.css'
+      },
+      dev: {
+        expand: true,
+        cwd: '<%= yeoman.app %>',
+        dest: 'dev',
+        src: [
+            '*.{ico,png,txt}',
+            '.htaccess',
+            '*.html',
+            'views/{,*/}*.html',
+            'images/{,*/}*.{webp}',
+            'fonts/*'
+          ]
       }
     },
 
@@ -357,10 +386,26 @@ module.exports = function (grunt) {
     ]);
   });
 
+
   grunt.registerTask('server', function (target) {
     grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
     grunt.task.run(['serve:' + target]);
   });
+
+  // I'm not sure if this dev task has been configured properly...
+  // The goal was to copy all content into the dev. folder.
+  grunt.registerTask('dev', function (target) {
+
+    grunt.task.run([
+      'clean:dev',
+      'bowerInstall',
+      'copy:dev',
+      'autoprefixer:dev',
+      'connect:livereload',
+      'watch'
+    ]);
+  });
+
 
   grunt.registerTask('test', [
     'clean:server',

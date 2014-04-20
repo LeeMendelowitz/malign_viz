@@ -1,0 +1,22 @@
+
+<a class="btn" href="/#/queries">Back</a>
+
+<h1>Query: {{queryId}}</h1>
+<p>Detail for query: {{ queryId }}</p>
+Have route params:
+
+<pre>
+{{ routeParams }}
+</pre>
+
+<div>
+
+{{status_message}}
+
+<map map-name={{queryId}} map-data="queryMap" ></map>
+
+<pre ng-repeat="aln in alignments">
+{{ aln }}
+</pre>
+
+</div>
