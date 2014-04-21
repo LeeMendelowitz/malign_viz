@@ -31,6 +31,15 @@ angular.module('malignerViewerApp')
     };
 
     $scope.getQueryMap = function() {
+      // Get the query Map from the server. Used cahced map if we have it.
+
+      var queryMap = mapDB.getMap($scope.queryId);
+
+      if(queryMap) {
+        console.log("loaded query map from cache.");
+        $scope.queryMap = queryMap;
+        return;
+      }
 
       console.log('Getting query Map ' + $scope.queryId);
       $http({method: 'GET', url: 'http://localhost:5000/api/queries/' + $scope.queryId}).
@@ -39,7 +48,7 @@ angular.module('malignerViewerApp')
         // when the response is available
 
         $scope.queryMap = data.query_map;
-        $scope.map = $scope.queryMap;
+
         console.log($scope.queryMap);
         mapDB.addMap($scope.queryMap);
       }).
@@ -56,6 +65,5 @@ angular.module('malignerViewerApp')
     
     $scope.getQueryMap();
     $scope.getAlignments();
-
 
   });

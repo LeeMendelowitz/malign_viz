@@ -19,7 +19,7 @@ def get_dict_data(elem):
   Otherwise, use the to_dict method.
   If none of this works, raise DictConversionError.
   """
-  if isinstance(elem, (int, long, str, bool, NoneType)):
+  if isinstance(elem, (int, float, long, str, bool, unicode, NoneType)):
     return elem
   elif isinstance(elem, (list, tuple)):
     return [i for i in iter_items(elem)]

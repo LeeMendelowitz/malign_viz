@@ -3,19 +3,26 @@
 {{ map }}
 </pre>
 
-<table>
+<table class="table table-bordered">
   <tr>
-    <td>Map</td>
+    <td class="row-header">Map</td>
     <td>{{ map.name }}</td>
   </tr>
   <tr>
-    <td>Fragments</td>
+    <td class="row-header">Fragments</td>
     <td>{{ map.num_fragments }}</td>
   </tr>
   <tr>
-    <td>Length</td>
+    <td class="row-header">Length</td>
     <td>{{ map.length | number}} bp</td>
   </tr>
 </table>
+
+<div class="map_container">
+  <div id="tooltip" class="hidden">
+        <p><strong>Fragment</strong></p>
+        <p><span id="value">{{ tooltip.fragment | number }}</span> bp</p>
+  </div>
+</div>
 
 </div>

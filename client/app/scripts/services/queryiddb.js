@@ -8,7 +8,7 @@ angular.module('malignerViewerApp')
     var self = {};
 
     self.setIds = function(ids) {
-      map_ids = ids
+      map_ids = ids;
     };
 
     self.getIds = function() {
