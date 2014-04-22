@@ -10,26 +10,27 @@ angular.module('malignerViewerApp')
       },
       link: function postLink(scope, element, attrs) {
 
-        console.log("scope: ", scope);
-        console.log("have map: ", scope.map);
-
-        var w = 1000;
-        var h = 200;
-
-        var barw = 20;
+        var plotw = 800;
+        var ploth = 200;
+        
         var barh = 50;
         var barspacing = 2;
-        var px_per_kb = 3.0;
+
 
         // Process fragments
         var processFragments = function(fragments) {
+
+          var maxFragment = d3.max(fragments);
+          var sumFragment = d3.sum(fragments);
+          var paddingPx = barspacing * (fragments.length-1);
+          var linearScale = d3.scale.linear().domain([0, sumFragment]).range([0, plotw-paddingPx]);
+
 
           var data = [];
           var last_pos = 0;
           for(var i = 0; i < fragments.length; i++) {
             var x = Math.round(last_pos + (i > 0 ? barspacing : 0));
-            var w = Math.round(fragments[i]/1000.0*px_per_kb);
-
+            var w = linearScale(fragments[i]);
             var new_frag = { x: x,
                              w: w,
                              h: barh,
@@ -48,14 +49,20 @@ angular.module('malignerViewerApp')
               return;
             }
 
-            var plot_data = processFragments(scope.map.fragments);
+            var plotData = processFragments(scope.map.fragments);
 
-            var svg = d3.select(element[0]).select('.map_container')
+            
+            var mapContainer = d3.select(element[0]).select('.map-container');
+            var tooltip = mapContainer.select('.mv-tooltip');
+
+            
+
+            var svg = mapContainer
                         .append('svg')
-                        .attr('width', w)
-                        .attr('height', h);
+                        .attr('width', plotw)
+                        .attr('height', ploth);
 
-            var recs = svg.selectAll('rect').data(plot_data).enter()
+            var recs = svg.selectAll('rect').data(plotData).enter()
                        .append('rect')
                        .attr('x', function(d, i) {
                          return d.x;
@@ -69,27 +76,27 @@ angular.module('malignerViewerApp')
                       })
                       .on("mouseover", function(d) {
                         
-                          //Get this bar's x/y values, then augment for the tooltip
-                          var svgTop = svg.attr('y')
-                          var xPosition = parseFloat(d3.select(this).attr("x")) + d.w/2;
-                          var yPosition = parseFloat(d3.select(this).attr("y")) + d.h;
+                        //Get this bar's x/y values, then augment for the tooltip
+                        var svgTop = svg.attr('y')
+                        var xPosition = parseFloat(d3.select(this).attr("x")) + d.w/2;
+                        var yPosition = parseFloat(d3.select(this).attr("y")) + d.h;
 
-                          //Update the tooltip position and value
-                          d3.select("#tooltip")
-                            .style("left", xPosition + "px")
-                            .style("top", yPosition + "px");
+                        //Update the tooltip position and value
+                        tooltip
+                          .style("left", xPosition + "px")
+                          .style("top", yPosition + "px");
 
-                          scope.$apply(function () {
-                            scope.tooltip = d;
-                          });
-                         
-                          //Show the tooltip
-                          d3.select("#tooltip").classed("hidden", false);
+                        scope.$apply(function () {
+                          scope.tooltip = d;
+                        });
+                       
+                        //Show the tooltip
+                        tooltip.classed("hidden", false);
 
                       })
                       .on("mouseout", function() {
                         //Hide the tooltip
-                        d3.select("#tooltip").classed("hidden", true);
+                        tooltip.classed("hidden", true);
                       });
         };
 

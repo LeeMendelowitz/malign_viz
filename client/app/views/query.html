@@ -14,10 +14,27 @@ Have route params:
 {{status_message}}
 
 <h2>Query Map Details</h2>
+
+<table class="table table-bordered">
+  <tr>
+    <td class="row-header">Map</td>
+    <td>{{ queryMap.name }}</td>
+  </tr>
+  <tr>
+    <td class="row-header">Fragments</td>
+    <td>{{ queryMap.num_fragments }}</td>
+  </tr>
+  <tr>
+    <td class="row-header">Length</td>
+    <td>{{ queryMap.length | number}} bp</td>
+  </tr>
+</table>
+
 <map map-name={{ queryId }} map-data="queryMap"></map>
 
-<pre ng-repeat="aln in alignments">
-{{ aln }}
-</pre>
+<div ng-repeat="aln in alignments">
+<hr>
+<alignment query-map="queryMap" alignment-data="aln"></alignment>
+</div>
 
 </div>

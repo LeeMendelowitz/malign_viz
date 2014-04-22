@@ -43,14 +43,26 @@ def query_details(query_id):
 
 @api_blueprint.route('/references', methods=('GET',))
 @crossdomain(origin="*")
-def reference_details():
+def all_reference_details():
     """
     Get the references
     """
     logging.info("Received references request.")
     ref_maps = list(ReferenceMap.objects())
-    ref_map_data= [rmap.to_dict() for rmap in ref_maps]
+    ref_map_data= [rmap.to_dict() if rmap else None for rmap in ref_maps]
     d = {'reference_maps' : ref_map_data}
+    return json.dumps(d)
+
+@api_blueprint.route('/references/<reference_id>', methods=('GET',))
+@crossdomain(origin="*")
+def reference_details(reference_id):
+    """
+    Get the references
+    """
+    logging.info("Received reference details request for reference %s"%reference_id)
+    refmaps = ReferenceMap.objects(name = reference_id)
+    refmap = refmaps[0] if refmaps.count() > 0 else None
+    d = {'reference_map' : refmap.to_dict() if refmap else None}
     return json.dumps(d)
 
 

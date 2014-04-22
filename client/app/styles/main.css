@@ -82,11 +82,15 @@ body {
   }
 }
 
-.map_container {
+.map-container {
   position: relative;
 }
 
-#tooltip {
+.alignment-container {
+  position: relative;
+}
+
+.mv-tooltip {
   position: absolute;
   width: 200px;
   height: auto;
@@ -101,11 +105,11 @@ body {
   pointer-events: none;
 }
 
-#tooltip.hidden {
+.mv-tooltip.hidden {
   display: none;
 }
 
-#tooltip p {
+.mv-tooltip p {
   margin: 0;
   font-family: sans-serif;
   font-size: 16px;

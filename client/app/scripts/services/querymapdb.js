@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('malignerViewerApp')
-  .service('mapDB', function mapDB($http) {
+  .service('mapDB', function mapDB($http, $q) {
 
     var query_db = {};
     var reference_db = undefined;
@@ -35,7 +35,8 @@ angular.module('malignerViewerApp')
 
         console.log("requesting reference maps.");
 
-        $http({method: 'GET', url: 'http://localhost:5000/api/references' }).
+        var responsePromise = $http({method: 'GET', url: 'http://localhost:5000/api/references' })
+          .
           success(function(data, status, headers, config) {
 
             console.log("got reference map response");
@@ -58,6 +59,45 @@ angular.module('malignerViewerApp')
     self.getReferenceMaps = function() {
       return reference_db;
     };
+
+    self.getReferenceMap = function(mapName) {
+
+      // Return a promise for retrieving the reference map.
+      var deferred = $q.defer();
+
+      // If we have a cached value, return it.
+      var cached_map = reference_db[mapName];
+      if (cached_map) {
+        deferred.resolve(Object.create(cached_map));
+        return deferred.promise;
+      }
+
+      var responsePromise = $http({
+             method: 'GET',
+             url: 'http://localhost:5000/api/references/' + mapName
+      })
+      .success( function( data, status, headers, config ) {
+
+        console.log("got reference map response");
+
+        var refMap = data['reference_map'];
+        if ( !refMap ) {
+          // No reference map was returned.
+          deferred.reject( "No reference map with id " + mapName );
+          return;
+        }
+
+        reference_db[ refMap.name ] = refMap;
+
+      })
+      .error( function( data, status, headers, config ) {
+        console.log("Failed to retrieve reference maps!");
+        deferred.reject("Error retrieving reference map from server.");
+      });
+
+      return deferred.promise;
+
+    }
 
     self.loadReferenceMaps();
 
