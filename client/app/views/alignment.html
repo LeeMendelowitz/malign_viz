@@ -1,11 +1,49 @@
 
 <div class="alignment-container">
-  <h4>Query Map:</h4>
+
+  <h3>Summary</h3>
+  <table class="table table-bordered">
+    <tr>
+      <td>
+          Score
+      </td>
+      <td>
+        {{ alignment.total_score | number:3 }}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Ref miss score
+      </td>
+      <td>
+        {{ alignment.score.ref_miss_score }}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Sizing score
+      </td>
+      <td>
+        {{ alignment.score.sizing_score | number:3 }}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Reference Misses
+      </td>
+      <td>
+        {{ alignment.ref_misses }}
+      </td>
+    </tr>
+  </table>
+
+  <h3>Query Map:</h3>
   <map map-data="queryMap"></map>
-  <h4>Reference Excerpt:</h4>
-  <map map-data="referenceMap"></map>
-  <h4>Alignment:</h4>
+  <h3>Reference Excerpt:</h3>
+  <map map-data="referenceMapSlice"></map>
+<!--   <h3>Alignment:</h3>
   <pre>
   {{ alignment }}
-  </pre>
+  </pre> -->
+  <chunkalignment></chunkalignment>
 </div>

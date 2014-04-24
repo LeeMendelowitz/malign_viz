@@ -1,4 +1,4 @@
-'use strict';
+ 'use strict';
 
 
 angular.module('malignerViewerApp')
@@ -10,43 +10,59 @@ angular.module('malignerViewerApp')
         queryMap: '=queryMap',
         alignment: '=alignmentData'
       },
-      link: function postLink(scope, element, attrs) {
-      
-        // Perhaps this code should move to a controller?
-        // All we do as of now is make the referenceMap slice which
-        // is part of the alignment available on the scope.
+
+      controller: function($scope, $element, $attrs) {
+
+        $scope.loadReference = function() {
+          // Get the reference map for the alignment.
+          // Store the slice of the reference that participates in alignment on the scope.
+          
+          var ref_id = $scope.alignment.ref_id;
+          var refMapPromise = mapDB.getReferenceMap($scope.alignment.ref_id);
+          refMapPromise.then( function(refMap) {
+
+              $scope.referenceMap = refMap;
 
 
-        if (!scope.alignment) {
-          return;
-        }
+              // Orient fragments with the alignment. If query
+              // is aligned to reverse reference, we need to
+              // reverse the reference fragments.
+              var fragments = refMap.fragments.slice();
+              if ( !$scope.alignment.ref_is_forward ) {
+                fragments = fragments.reverse();
+              }
 
-        scope.$watchCollection('[queryMap, alignment]', function() {
+              $scope.orientedReferenceFragments = fragments;
 
-          var processRefMap = function (refMap) {
+              // Set the slice of the reference map that is in the alignment.
+              var matchedChunks = $scope.alignment.matched_chunks;
+              var firstChunk = matchedChunks[0];
+              var lastChunk = matchedChunks[matchedChunks.length-1];
+              var refFragmentsSlice = fragments.slice(firstChunk.ref_chunk.start, lastChunk.ref_chunk.end);
 
-            if (!scope.alignment.ref_is_forward) {
-              refMap.fragments.reverse(); 
-            }
+              $scope.referenceFragmentsSlice = refFragmentsSlice;
+              $scope.referenceMapSlice = {fragments: refFragmentsSlice};
 
-            // Set the slice of the reference map that is in the alignment.
-            var matchedChunks = scope.alignment.matched_chunks;
-            var firstChunk = matchedChunks[0];
-            var lastChunk = matchedChunks[matchedChunks.length-1];
-            var refFragsSubset = refMap.fragments.slice(firstChunk.ref_chunk.start, lastChunk.ref_chunk.end);
+              addInteriorFragments();
 
-            
-            var refMapSubset = { fragments : refFragsSubset };
-
-            // Put the reference map data on the scope.
-            scope.referenceMap = refMapSubset;
-          }
-
-          var refMapPromise = mapDB.getReferenceMap(scope.alignment.ref_id)
-                      .then( function(refMap) {
-                          processRefMap(refMap);
-                      });
           });
+        };
+
+        var addInteriorFragments = function() {
+          // Process the matched chunks and add interior fragments.
+
+          var matchedChunks = $scope.alignment.matched_chunks;
+
+          angular.forEach(matchedChunks, function(chunk) {
+            chunk.ref_chunk.fragments = $scope.orientedReferenceFragments.slice(chunk.ref_chunk.start, chunk.ref_chunk.end);
+            chunk.query_chunk.fragments = $scope.queryMap.fragments.slice(chunk.query_chunk.start, chunk.query_chunk.end);
+          });
+        };
+
+      },
+
+      link: function link(scope, element, attrs) {
+        scope.loadReference();
       }
 
     };

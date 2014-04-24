@@ -4,7 +4,7 @@ angular.module('malignerViewerApp')
   .service('mapDB', function mapDB($http, $q) {
 
     var query_db = {};
-    var reference_db = undefined;
+    var reference_db = {};
 
     var self = {};
 
@@ -66,7 +66,7 @@ angular.module('malignerViewerApp')
       var deferred = $q.defer();
 
       // If we have a cached value, return it.
-      var cached_map = reference_db[mapName];
+      var cached_map = reference_db && reference_db[mapName];
       if (cached_map) {
         deferred.resolve(Object.create(cached_map));
         return deferred.promise;
@@ -88,6 +88,7 @@ angular.module('malignerViewerApp')
         }
 
         reference_db[ refMap.name ] = refMap;
+        deferred.resolve(Object.create(refMap));
 
       })
       .error( function( data, status, headers, config ) {
@@ -99,7 +100,7 @@ angular.module('malignerViewerApp')
 
     }
 
-    self.loadReferenceMaps();
+    //self.loadReferenceMaps();
 
     return self;
 

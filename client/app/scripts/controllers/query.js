@@ -31,7 +31,7 @@ angular.module('malignerViewerApp')
     };
 
     $scope.getQueryMap = function() {
-      // Get the query Map from the server. Used cahced map if we have it.
+      // Get the query Map from the server. Used cached map if we have it.
 
       var queryMap = mapDB.getMap($scope.queryId);
 
@@ -57,10 +57,6 @@ angular.module('malignerViewerApp')
       // or server returns response with an error status.
         $scope.status_message = 'Failed to retrieve alignments.';
       });
-    };
-
-    $scope.getReferenceMaps = function() {
-
     };
     
     $scope.getQueryMap();

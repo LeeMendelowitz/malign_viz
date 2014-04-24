@@ -42,8 +42,9 @@ angular.module('malignerViewerApp')
         };
 
 
-        var drawMap = function() {
+        var drawMap = function(newVal, oldVal) {
 
+            console.log("drawMap with newVal: ", newVal, ", oldVal: ", oldVal);
             if (!scope.map) {
               console.log('have no map data!');
               return;

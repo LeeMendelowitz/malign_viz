@@ -32,8 +32,29 @@ Have route params:
 
 <map map-name={{ queryId }} map-data="queryMap"></map>
 
+<h2>Alignment Summary</h2>
+<table class="table table-bordered">
+  <tr>
+    <th>Alignment</th>
+    <th>Score</th>
+    <th>Sizing Score</th>
+    <th>Ref. Miss Score</th>
+    <th>Ref. Miss Rate</th>
+    <th>Query Miss Score</th>
+  </tr>
+  <tr ng-repeat="aln in alignments">
+    <td> Alignment {{ $index }}</a> </td>
+    <td> {{ aln.total_score | number:3 }} </td>
+    <td> {{ aln.score.sizing_score | number:3 }}</td>
+    <td> {{ aln.score.ref_miss_score | number:3 }}</td>
+    <td> {{ aln.ref_miss_rate*100.0 | number:2 }} %</td>
+    <td> {{ aln.score.query_miss_score | number:3 }}</td>
+  </tr>
+</table>
+
 <div ng-repeat="aln in alignments">
 <hr>
+<h3>Alignment {{$index}}</h3>
 <alignment query-map="queryMap" alignment-data="aln"></alignment>
 </div>
 
