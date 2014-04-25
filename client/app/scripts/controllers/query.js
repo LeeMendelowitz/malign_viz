@@ -49,7 +49,7 @@ angular.module('malignerViewerApp')
 
         $scope.queryMap = data.query_map;
 
-        console.log($scope.queryMap);
+        //console.log($scope.queryMap);
         mapDB.addMap($scope.queryMap);
       }).
       error(function(data, status, headers, config) {

@@ -12,7 +12,7 @@ angular.module('malignerViewerApp')
     // Functions for retrieving query maps.
     self.addMap = function(map) {
       query_db[map.name] = map;
-      console.log('adding map to mapDDB: ', map);
+      //console.log('adding map to mapDDB: ', map);
     };
 
     self.removeMap = function(map) {
@@ -78,7 +78,7 @@ angular.module('malignerViewerApp')
       })
       .success( function( data, status, headers, config ) {
 
-        console.log("got reference map response");
+        //console.log("got reference map response");
 
         var refMap = data['reference_map'];
         if ( !refMap ) {
@@ -98,7 +98,7 @@ angular.module('malignerViewerApp')
 
       return deferred.promise;
 
-    }
+    };
 
     //self.loadReferenceMaps();
 

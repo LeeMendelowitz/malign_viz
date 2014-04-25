@@ -20,7 +20,6 @@ angular.module('malignerViewerApp')
         // Process fragments
         var processFragments = function(fragments) {
 
-          var maxFragment = d3.max(fragments);
           var sumFragment = d3.sum(fragments);
           var paddingPx = barspacing * (fragments.length-1);
           var linearScale = d3.scale.linear().domain([0, sumFragment]).range([0, plotw-paddingPx]);
@@ -44,9 +43,9 @@ angular.module('malignerViewerApp')
 
         var drawMap = function(newVal, oldVal) {
 
-            console.log("drawMap with newVal: ", newVal, ", oldVal: ", oldVal);
+            //console.log("drawMap with newVal: ", newVal, ", oldVal: ", oldVal);
             if (!scope.map) {
-              console.log('have no map data!');
+              //console.log('have no map data!');
               return;
             }
 
