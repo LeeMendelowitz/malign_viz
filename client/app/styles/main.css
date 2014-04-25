@@ -82,20 +82,16 @@ body {
   }
 }
 
-.map-container {
-  position: relative;
-}
-
-.alignment-container {
+.map-container, .alignment-container, .chunkalignment-container {
   position: relative;
 }
 
 .mv-tooltip {
   position: absolute;
-  width: 200px;
+  width: auto;
   height: auto;
-  padding: 10px;
-  background-color: white;
+  padding: 5px;
+  background-color: rgba(255,255,255,0.8);
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
   border-radius: 10px;

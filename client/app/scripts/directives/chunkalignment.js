@@ -3,12 +3,25 @@
 angular.module('malignerViewerApp')
   .directive('chunkalignment', function () {
     return {
-      template: '<div></div>',
+      templateUrl: '/views/chunkalignment.html',
       restrict: 'E',
       require: '^alignment',
       link: function postLink(scope, element, attrs) {
 
         //console.log('chunkalignment link function!');
+        var setTooltipData = function(chunk, index) {
+
+          var d = {};
+          d.num_query_frags = chunk.query_chunk.fragments.length
+          d.num_ref_frags = chunk.ref_chunk.fragments.length;
+          d.chunk = chunk;
+          d.index = index;
+
+          scope.$apply(function() {
+            scope.tooltipData = d;
+          });
+          
+        };
 
         var draw_chunk_alignment = function() {
 
@@ -69,7 +82,7 @@ angular.module('malignerViewerApp')
           var alignmentLengthBp = d3.sum(matchedChunkSizes);
 
           // Create a scale.
-          var xScale = d3.scale.linear().domain([0, alignmentLengthBp]).range([margin, plotw-margin]);
+          var xScale = d3.scale.linear().domain([0, alignmentLengthBp]).range([0, plotw-2*margin]);
 
           var matchedChunksCumSum = [0];
           var matchedChunksCumSum = matchedChunksCumSum.concat(cumsum(matchedChunkSizes).slice(0,-1));
@@ -88,9 +101,13 @@ angular.module('malignerViewerApp')
             var rChunk = matched_chunk.ref_chunk;
             var qChunk = matched_chunk.query_chunk;
 
+            console.log('chunkOffset: ', chunkOffset);
+            console.log('rScale: ', xScale(rChunk.size));
+            console.log('qScale: ', xScale(qChunk.size));
+
             // Make groups for the query and the reference
-            var qY = margin + hBar + vSpacing;
-            var rY = margin;
+            var qY = hBar + vSpacing;
+            var rY = 0;
             var rGroup = chunkGroup.append('g')
                                    .attr('transform', 'translate(0,' + rY + ')');
             var qGroup = chunkGroup.append('g')
@@ -145,18 +162,56 @@ angular.module('malignerViewerApp')
                                       .attr('stroke', missedSiteFill)
                                       .attr('stroke-width', '2');
             }
+
+            activateTooltip(chunkGroup, i);
+
+          };
+
+          // activate tooltip on a matched chunk node.
+          var activateTooltip = function(chunkGroup, index) { 
+
+            var elem = chunkGroup[0][0];
+            var xPosition =  elem.getBoundingClientRect().left;
+
+
+            chunkGroup.on("mouseover", function(d) {
+
+              //Update the tooltip position and value
+
+              tooltip
+                .style("left", xPosition + "px")
+                .style("top", 100 + "px");
+
+              var matchedChunkData = d;
+              setTooltipData(matchedChunkData, index);
+
+              //Show the tooltip
+              tooltip.classed("hidden", false);
+
+            })
+            .on("mouseout", function() {
+              //Hide the tooltip
+              tooltip.classed("hidden", true);
+            });
           };
 
           // Draw each matched chunk.
           var container = d3.select(element[0]);
+
           var svg = container.append('svg')
                              .attr('width', plotw)
                              .attr('height', ploth);
 
-          var chunkGroups = svg.selectAll('g')
+          var tooltip = container.select('.mv-tooltip');
+
+          var chunkArea = svg.append('g')
+                             .attr('transform', 'translate(' + margin + ',' + margin + ')');
+
+          var chunkGroups = chunkArea.selectAll('g')
                                .data(matchedChunks)
                                .enter()
                                .append('g')
+                               .classed('matched-chunk', true)
                                .each(drawMatchedChunk);
 
         };
