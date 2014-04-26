@@ -27,8 +27,6 @@ angular.module('malignerViewerApp')
 
                 $scope.referenceMap = refMap;
 
-                console.log('load reference, $scope.$$phase: ', $scope.$$phase);
-
                 // Orient fragments with the alignment. If query
                 // is aligned to reverse reference, we need to
                 // reverse the reference fragments.
@@ -51,8 +49,6 @@ angular.module('malignerViewerApp')
                 addInteriorFragments();
 
                 $scope.processedReference = $scope.processedReference + 1;
-                console.log('processedReference: ', $scope.processedReference);
-
           });
 
 

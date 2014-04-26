@@ -1,12 +1,45 @@
 <div class="chunkalignment-container">
-    <div class="mv-tooltip hidden">
-        <p>Chunk {{ tooltipData.index + 1 }} of {{ alignment.matched_chunks.length }}</p>
+    <div class="matched-chunk-info">
 
-        <ul>
-        <li>{{ tooltipData.num_ref_frags }} reference fragments.</li>
-        <li>{{ tooltipData.num_query_frags }} query fragments.</li> 
-        <li>{{ tooltipData.chunk.query_chunk.size | number}} bp query</li>  
-        <li>{{ tooltipData.chunk.ref_chunk.size | number }} bp reference.</li>
-        </ul>
+      <div ng-hide="tooltipData">
+      <p>Select a matched chunk to display matched chunk data</p>
+      </div>
+
+      <div ng-show="tooltipData">
+        <h4>
+        Chunk {{ tooltipData.index + 1 }} of {{ alignment.matched_chunks.length }}
+        </h4>
+
+
+        <table class="table table-bordered table-condensed">
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>Num. Fragments</th>
+              <th>Fragment Sizes</th>
+              <th>Total Size (bp)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td> Reference </td>
+              <td> {{ tooltipData.num_ref_frags }} </td>
+              <td>[
+                <span ng-repeat="f in tooltipData.ref_chunk.fragments">
+                {{ f | number }} <span ng-hide="$last"> | </span>
+                </span>
+                ]
+              </td>
+              <td> {{ tooltipData.ref_chunk.size | number }}</td>
+            </tr>
+            <tr>
+              <td> Query </td>
+              <td> {{ tooltipData.num_query_frags }} </td>
+              <td> {{ tooltipData.query_chunk.fragments }}</td>
+              <td> {{ tooltipData.query_chunk.size | number}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
   </div>
 </div>

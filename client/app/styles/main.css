@@ -111,3 +111,40 @@ body {
   font-size: 16px;
   line-height: 20px;
 }
+
+.matched-chunk-info {
+  width: auto;
+  height: auto;
+  padding: 5px;
+  background-color: rgba(255,255,255,0.8);
+  background-color: #d0d0d0;
+  background-color: white;
+  pointer-events: none;
+  font-family: sans-serif;
+  font-size: 12px;
+  border: 1px solid black;
+}
+
+svg.chunk-alignment{
+  font-family: 12px;
+}
+
+text.chunk-label {
+  text-anchor: middle;
+  font-family: verdana, sans-serif;
+  font-size: 12px;
+  /*fill: grey;*/
+}
+
+text.chunk-label.ref-label {
+  transform: translate(0, -0.2em);
+}
+
+text.chunk-label.query-label {
+  transform: translate(0, 3.2em);
+}
+
+line.missed-site {
+  stroke: red;
+  stroke-width: 1px;
+}
