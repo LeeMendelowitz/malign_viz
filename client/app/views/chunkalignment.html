@@ -35,11 +35,32 @@
             <tr>
               <td> Query </td>
               <td> {{ tooltipData.num_query_frags }} </td>
-              <td> {{ tooltipData.query_chunk.fragments }}</td>
-              <td> {{ tooltipData.query_chunk.size | number}}</td>
+              <td>[
+                <span ng-repeat="f in tooltipData.query_chunk.fragments">
+                {{ f | number }} <span ng-hide="$last"> | </span>
+                </span>
+                ]
+              </td>
+              <td> {{ tooltipData.query_chunk.size | number }}</td>
             </tr>
           </tbody>
         </table>
+
+        <table class="table table-bordered table-condensed">
+          <thead>
+            <th>Query Miss Score</th>
+            <th>Ref Miss Score</th>
+            <th>Sizing Score</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ tooltipData.score.query_miss_score | number:2 }}</td>
+              <td>{{ tooltipData.score.ref_miss_score | number:2 }}</td>
+              <td>{{ tooltipData.score.sizing_score | number:2 }}</td>
+            </tr>
+          </tbody>
+        </table>
+
       </div>
   </div>
 </div>

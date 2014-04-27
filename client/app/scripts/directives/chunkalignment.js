@@ -16,6 +16,8 @@ angular.module('malignerViewerApp')
           d.num_ref_frags = data.refChunk.fragments.length;
           d.query_chunk = data.queryChunk;
           d.ref_chunk = data.refChunk;
+          d.score = data.score;
+          d._data = data;
           d.index = index;
 
           scope.$apply(function() {
@@ -141,12 +143,18 @@ angular.module('malignerViewerApp')
           // Add click event listener
           chunkGroups.on('mouseover', function(d, index) {
 
+              var chunkGroup = d3.select(this);
+              chunkGroup.classed('active', true);
+
               var matchedChunkData = d;
               setTooltipData(matchedChunkData, index);
 
               //Show the tooltip
               tooltip.classed('hidden', false);
 
+          }).on('mouseout', function(d,index) {
+              var chunkGroup = d3.select(this);
+              chunkGroup.classed('active', false);
           });
 
 

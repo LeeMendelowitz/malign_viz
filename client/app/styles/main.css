@@ -144,6 +144,16 @@ text.chunk-label.query-label {
   transform: translate(0, 3.2em);
 }
 
+g.matched-chunk.active rect {
+  opacity: 0.7;
+  stroke-width:1;
+  stroke: mediumspringgreen;
+}
+
+g.matched-chunk.active text {
+  font-weight: bold;
+}
+
 line.missed-site {
   stroke: red;
   stroke-width: 1px;
