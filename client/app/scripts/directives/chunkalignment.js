@@ -31,24 +31,24 @@ angular.module('malignerViewerApp')
 
           var alignment_data = scope.alignment;
 
-          console.log('chunkalignment has alignment data: ', alignment_data);
+          //console.log('chunkalignment has alignment data: ', alignment_data);
 
           if (!alignment_data) {
             return;
           }
 
-          //console.log('chunkalignment has alignment data with matched chunks: ', alignment_data.matched_chunks);
+          //console.log('chunkalignment has alignment data with matched chunks: ', alignment_data.rescaled_matched_chunks);
 
-          var first_chunk = alignment_data.matched_chunks[0];
-          console.log('first chunk: ', first_chunk);
+          var first_chunk = alignment_data.rescaled_matched_chunks[0];
+          //console.log('first chunk: ', first_chunk);
           if (! first_chunk.ref_chunk.fragments) {
             console.log('chunkalignment has alignment data but no fragment data: ',
-                        alignment_data.matched_chunks);
+                        alignment_data.rescaled_matched_chunks);
 
             return;
           }
 
-          console.log('chunkalignment has alignment data and fragment data');
+          //console.log('chunkalignment has alignment data and fragment data');
 
           var plotw = 800;
           var ploth = 200;
@@ -64,12 +64,15 @@ angular.module('malignerViewerApp')
           var chunkFillColors = ['steelblue', 'silver(16)'];
 
           // Compute the length of chunks in the alignment in bp.
-          var matchedChunks = alignment_data.matched_chunks;
+          var matchedChunks = alignment_data.rescaled_matched_chunks;
           var rSum = d3.sum(matchedChunks.map(function(c) { return c.ref_chunk.size; }));
           var qSum = d3.sum(matchedChunks.map(function(c) { return c.query_chunk.size; }));
 
           // Define cumulative sum function.
           var cumsum = function(a) {
+            if (!a) {
+              return 0;
+            }
             var s = 0;
             var r = [];
             for(var i = 0; i < a.length; i++) {

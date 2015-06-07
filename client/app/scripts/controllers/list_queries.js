@@ -34,10 +34,12 @@ angular.module('malignerViewerApp')
 
     $scope.goToMap = function() {
       if ($scope.queryMapName) {
-        $location.url('#/query/' + $scope.queryMapName);
+        var url = '/query/' + $scope.queryMapName;
+        console.log('setting url: ', url);
+        $location.path(url);
       }
     };
 
-    $scope.getQueries();
+    //$scope.getQueries();
 
   });

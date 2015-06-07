@@ -1,5 +1,6 @@
 
-<a class="btn" href="/#/queries">Back</a>
+<a class="btn btn-primary" href="/#/queries">
+<span class="glyphicon glyphicon-chevron-left"></span> Back</a>
 
 <h1>Query: {{queryId}}</h1>
 <p>Detail for query: {{ queryId }}</p>
@@ -33,29 +34,39 @@ Have route params:
 <map map-name={{ queryId }} map-data="queryMap"></map>
 
 <h2>Alignment Summary</h2>
+
+<alignmentsorter alignments="alignments"></alignmentsorter>
+
 <table class="table table-bordered">
   <tr>
     <th>Alignment</th>
-    <th>Score</th>
+    <th>Score (rescaled)</th>
+    <th>Total Log. Likelihood</th>
+    <th>Location</th>
     <th>Sizing Score</th>
     <th>Ref. Miss Score</th>
     <th>Ref. Miss Rate</th>
     <th>Query Miss Score</th>
   </tr>
   <tr ng-repeat="aln in alignments">
-    <td> Alignment {{ $index }}</a> </td>
-    <td> {{ aln.total_score | number:3 }} </td>
-    <td> {{ aln.score.sizing_score | number:3 }}</td>
-    <td> {{ aln.score.ref_miss_score | number:3 }}</td>
+    <td><a ng-click="scrollTo('alignment-' + $index)">Alignment {{ $index }}</a> </td>
+    <td> {{ aln.total_score_rescaled | number:3 }} </td>
+    <td> {{ aln.total_log_likelihood | number:3 }} </td>
+    <td> {{ aln.ref_id }}, 
+      {{ aln.matched_chunks[0].ref_chunk.start }} to
+      {{ aln.matched_chunks[aln.matched_chunks.length - 1].ref_chunk.end }}
+    </td>
+    <td> {{ aln.rescaled_score.sizing_score | number:3 }}</td>
+    <td> {{ aln.rescaled_score.ref_miss_score | number:3 }}</td>
     <td> {{ aln.ref_miss_rate*100.0 | number:2 }} %</td>
-    <td> {{ aln.score.query_miss_score | number:3 }}</td>
+    <td> {{ aln.rescaled_score.query_miss_score | number:3 }}</td>
   </tr>
 </table>
 
 <div ng-repeat="aln in alignments">
-<hr>
-<h3>Alignment {{$index}}</h3>
-<alignment query-map="queryMap" alignment-data="aln"></alignment>
+  <hr>
+  <h3 id="alignment-{{$index}}">Alignment {{$index}}</h3>
+  <alignment query-map="queryMap" alignment-data="aln"></alignment>
 </div>
 
 </div>

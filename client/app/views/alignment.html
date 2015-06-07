@@ -5,10 +5,23 @@
   <table class="table table-bordered">
     <tr>
       <td>
+        Reference
+      </td>
+      <td>
+        {{ alignment.ref_id }}
+
+        ({{ firstChunk.ref_chunk.start }}, 
+        {{ lastChunk.ref_chunk.end}})
+        
+        {{ alignment.ref_is_forward ? 'Forward' : 'Reverse' }}
+      </td>
+    </tr>
+    <tr>
+      <td>
           Score
       </td>
       <td>
-        {{ alignment.total_score | number:3 }}
+        {{ alignment.total_score_rescaled | number:3 }}
       </td>
     </tr>
     <tr>
@@ -16,7 +29,7 @@
         Ref miss score
       </td>
       <td>
-        {{ alignment.score.ref_miss_score }}
+        {{ alignment.rescaled_score.ref_miss_score }}
       </td>
     </tr>
     <tr>
@@ -24,7 +37,7 @@
         Sizing score
       </td>
       <td>
-        {{ alignment.score.sizing_score | number:3 }}
+        {{ alignment.rescaled_score.sizing_score | number:3 }}
       </td>
     </tr>
     <tr>
@@ -35,13 +48,30 @@
         {{ alignment.ref_misses }}
       </td>
     </tr>
+    <tr>
+      <td>
+        Query Scaling Factor
+      </td>
+      <td>
+        {{ alignment.query_scaling_factor | number:3 }}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Total Log. Likelihood
+      </td>
+      <td>
+        {{ alignment.total_log_likelihood | number:3 }}
+      </td>
+    </tr>
   </table>
-
+  
+<!--   
   <h3>Query Map:</h3>
   <map map-data="queryMap"></map>
   <h3>Reference Excerpt:</h3>
   <map map-data="referenceMapSlice"></map>
-
+ -->
   <chunkalignment alignment></chunkalignment>
 
 <!--   <h3>Alignment:</h3>

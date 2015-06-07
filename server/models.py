@@ -130,25 +130,20 @@ class Alignment(DictMixin, Document):
   query_interior_size = IntField()
   matched_chunks = ListField(field = EmbeddedDocumentField(MatchedChunk))
 
+  total_score_rescaled = FloatField()
+  rescaled_matched_chunks = ListField(field = EmbeddedDocumentField(MatchedChunk))
+  rescaled_score = EmbeddedDocumentField(Score)
+
   meta = {'collection': 'alignments',
-          'index' : ['query_id']}
+          'indexes' : ['query_id',
+                       ('query_id', 'total_score_rescaled'),
+                       ('query_id', 'rescaled_score.sizing_score')]}
 
   def __str__(self):
     return self.to_json()
 
-  def web_json(self):
-    """
-    Return json representation for web server.
-    """
-    fields = ['ref_id', 'query_id', 'total_score', 'ref_is_forward']
-    d = dict((f,getattr(self, f)) for f in fields)
-    d['matched_chunks'] = [mc.to_dict() for mc in self.matched_chunks]
-    #d['matched_chunks'] = [mc.to_tuple() for mc in self.matched_chunks]
-    #return json.dumps(d)
-    return self.to_json()
 
-
-class Map(DictMixin):
+class Map(DictMixin, Document):
   """
   Representation of a Map (Rmap, Nmap, or Reference)
   for a single restriction enzyme.
@@ -161,7 +156,7 @@ class Map(DictMixin):
   @classmethod
   def from_line(cls , s):
     """
-    Parse a line in a map file to create a new object.
+    Parse a line in a SOMA Map file to create a new object.
     """
     fields = s.strip().split()
     name = fields[0]
@@ -176,11 +171,13 @@ class Map(DictMixin):
     d['name'] = self.name
     return d
 
+  meta = { 'abstract' : True }
+
 class QueryMap(Map, Document):
   meta = {'collection' : 'query_maps',
-          'index' : ['name']}
+          'indexes' : ['name']}
 
 class ReferenceMap(Map, Document):
   meta = {'collection' : 'reference_maps',
-          'index' : ['name']}
+          'indexes' : ['name']}
 

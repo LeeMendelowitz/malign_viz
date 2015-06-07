@@ -1,0 +1,26 @@
+<form name="alignment_sort">
+
+  <p>Sort: </p>
+  
+  <input type="radio" id="rescaled_score" name="rescaled_score" ng-model="alignmentSort" value="rescaled_score">
+  <label for="rescaled_score">
+    Rescaled Score
+  </label>
+  
+  <input type="radio" id="rescaled_sizing_score" name="rescaled_sizing_score" ng-model="alignmentSort" value="rescaled_sizing_score">
+  <label for="rescaled_sizing_score">
+    Rescaled Sizing Score
+  </label>
+  
+  <input type="radio" id="ref_miss_score" name="ref_miss_score" ng-model="alignmentSort" value="ref_miss_score">
+    <label for="ref_miss_score">
+    Ref. Miss Score
+  </label>
+
+  <input type="radio" id="total_log_likelihood" name="total_log_likelihood" ng-model="alignmentSort" value="total_log_likelihood">
+    <label for="total_log_likelihood">
+    Total Log Likelihood
+  </label>
+
+  <!-- <tt>Sort = {{alignmentSort | json}}</tt><br/> -->
+</form>

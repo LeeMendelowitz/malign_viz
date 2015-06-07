@@ -11,7 +11,7 @@ angular.module('malignerViewerApp')
         alignment: '=alignmentData'
       },
 
-      controller: function($scope, $element, $attrs) {
+      controller: function($scope, $element, $attrs, $window) {
 
         // Add a flag to the scope to indicate that we have
         // processed the referenced.
@@ -38,7 +38,7 @@ angular.module('malignerViewerApp')
                 $scope.orientedReferenceFragments = fragments;
 
                 // Set the slice of the reference map that is in the alignment.
-                var matchedChunks = $scope.alignment.matched_chunks;
+                var matchedChunks = $scope.alignment.rescaled_matched_chunks;
                 var firstChunk = matchedChunks[0];
                 var lastChunk = matchedChunks[matchedChunks.length-1];
                 var refFragmentsSlice = fragments.slice(firstChunk.ref_chunk.start, lastChunk.ref_chunk.end);
@@ -47,13 +47,46 @@ angular.module('malignerViewerApp')
                 $scope.referenceMapSlice = {fragments: refFragmentsSlice};
 
                 addInteriorFragments();
+                applyQueryScalingFactor();
 
                 $scope.processedReference = $scope.processedReference + 1;
-          });
+
+                $scope.firstChunk = firstChunk;
+                $scope.lastChunk = lastChunk;
+          },
+            function(msg) {
+              console.log("Error getting ref map: "  + msg);
+              $window.alert("Error getting ref map: "  + msg);
+            }
+          );
 
 
       
         };
+
+        var applyQueryScalingFactor = function() {
+          // Multiply query chunk sizes by the query scaling factor;
+
+          var query_scaling_factor = $scope.alignment.query_scaling_factor || 1.0;
+          var matchedChunks = $scope.alignment.matched_chunks;
+          var i;
+  
+          angular.forEach(matchedChunks, function(chunk) {
+
+            // Scale the query chunk size
+            chunk.query_chunk.size_scaled = chunk.query_chunk.size * query_scaling_factor;
+
+            // Scaling the interior fragment sizes
+            for (i = 0; i < chunk.query_chunk.fragments.length; i++) {
+              chunk.query_chunk.scaled_fragments = chunk.query_chunk.fragments.map( function(frag) {
+                return frag * query_scaling_factor;
+              })
+            }
+
+          });
+          
+        };
+        
 
         $scope.getReferenceMap = function() {
           return $scope.referenceMap;
@@ -70,12 +103,19 @@ angular.module('malignerViewerApp')
 
         var addInteriorFragments = function() {
           // Process the matched chunks and add interior fragments.
-          
-          var matchedChunks = $scope.alignment.matched_chunks;
-
-          angular.forEach(matchedChunks, function(chunk) {
+    
+          angular.forEach($scope.alignment.matched_chunks, function(chunk) {
             chunk.ref_chunk.fragments = $scope.orientedReferenceFragments.slice(chunk.ref_chunk.start, chunk.ref_chunk.end);
             chunk.query_chunk.fragments = $scope.queryMap.fragments.slice(chunk.query_chunk.start, chunk.query_chunk.end);
+          });
+
+          angular.forEach($scope.alignment.rescaled_matched_chunks, function(chunk) {
+            chunk.ref_chunk.fragments = $scope.orientedReferenceFragments.slice(chunk.ref_chunk.start, chunk.ref_chunk.end);
+            chunk.query_chunk.fragments = $scope.queryMap.fragments
+              .slice(chunk.query_chunk.start, chunk.query_chunk.end)
+              .map(function(frag) { 
+                return frag * $scope.alignment.query_scaling_factor;
+              });
           });
 
         };

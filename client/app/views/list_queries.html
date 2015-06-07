@@ -2,14 +2,18 @@
 
 <div ng-controller="ListQueriesCtrl">
 
+  <div>
+  <input type="text" ng-model="queryMapName">
+    <button type="button" class="btn btn-success" ng-click="goToMap()" ng-disabled="!queryMapName">Go</button>
+    <button type="button" class="btn btn-primary" ng-click="getQueries()">List Query Ids</button>
+  </div>
 
-<input type="text" ng-model="queryMapName">
-<button ng-click="goToMap()" ng-enabled="queryMapName">Go</button>
-
-<button ng-click="getQueries()">List Query Ids</button>
-
-<ul>
-<li ng-repeat="queryId in queryIds"><a ng-href="#/query/{{queryId}}">{{queryId}}</a></li>
-</ul>
+  <div>
+    <ul>
+      <li ng-repeat="queryId in queryIds">
+        <a ng-href="#/query/{{queryId}}">{{queryId}}</a>
+      </li>
+    </ul>
+  </div>
 
 </div>

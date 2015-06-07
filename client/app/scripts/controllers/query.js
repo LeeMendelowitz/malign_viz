@@ -2,7 +2,7 @@
 
 angular.module('malignerViewerApp')
 
-  .controller('QueryCtrl', function ($scope, $routeParams, $http, mapDB) {
+  .controller('QueryCtrl', function ($scope, $routeParams, $http, mapDB, $location, $anchorScroll) {
 
     $scope.routeParams = $routeParams;
 
@@ -10,6 +10,20 @@ angular.module('malignerViewerApp')
     console.log('Have route params: ', $routeParams);
 
     $scope.status_message = 'Retrieving alignments...';
+
+
+    $scope.scrollTo = function(id) {
+      // Hack to get scrollTo work:
+      // http://stackoverflow.com/a/15935517
+      // 1. Set the hash.
+      // 2. Call anchorScroll, which uses the hash.
+      // 3. Reset the hash, to avoid a route change.
+      var old = $location.hash();
+      $location.hash(id);
+      $anchorScroll();
+      $location.hash(old);
+    };
+
 
     $scope.getAlignments = function() {
 
@@ -62,4 +76,9 @@ angular.module('malignerViewerApp')
     $scope.getQueryMap();
     $scope.getAlignments();
 
+
   });
+
+
+
+

@@ -17,7 +17,7 @@ from datetime import datetime
 
 import models
 
-DB_NAME = "MM52"
+DB_NAME = "malign_viz"
 
 c = MongoClient()
 db = c[DB_NAME]
@@ -88,7 +88,6 @@ def load_reference_map_file_bulk(path, batch = 20000):
   """
   Save reference maps into database.
   """
-  import pdb; pdb.set_trace()
   load_map_file_bulk(path, document_model = models.ReferenceMap, batch=batch)
   
 def load_map_file_bulk(map_file_path, document_model, batch = 20000):
