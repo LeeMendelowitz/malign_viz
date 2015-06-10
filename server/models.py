@@ -2,8 +2,10 @@
 Code for models
 """
 from mongoengine import *
+from mongoengine.context_managers import switch_collection
 import json
 from types import NoneType
+import datetime
 
 
 
@@ -110,7 +112,13 @@ class MatchedChunk(DictMixin, EmbeddedDocument):
       self.ref_chunk.to_tuple(),
       self.score.to_tuple())
 
+
+
+
+
 class Alignment(DictMixin, Document):  
+  doc_type = StringField(default = 'alignment', required = True)
+  experiment = StringField()
   query_num_frags = IntField()
   ref_misses = IntField()
   interior_size_ratio = FloatField()
@@ -135,9 +143,10 @@ class Alignment(DictMixin, Document):
   rescaled_score = EmbeddedDocumentField(Score)
 
   meta = {'collection': 'alignments',
-          'indexes' : ['query_id',
-                       ('query_id', 'total_score_rescaled'),
-                       ('query_id', 'rescaled_score.sizing_score')]}
+          'indexes' : [ ('query_id'),
+                        ('query_id', 'total_score_rescaled'),
+                        ('query_id', 'rescaled_score.sizing_score')
+                      ]}
 
   def __str__(self):
     return self.to_json()
@@ -148,36 +157,105 @@ class Map(DictMixin, Document):
   Representation of a Map (Rmap, Nmap, or Reference)
   for a single restriction enzyme.
   """
+  doc_type = StringField(default = 'map', required = True)
+  experiment = StringField()
   name = StringField(primary_key = True)
   fragments = ListField(field = IntField()) # fragments
   num_fragments = IntField() # Number of fragments
   length = IntField() # Length in bp
+  type = StringField(required = True, choices=("query", "reference"))
 
   @classmethod
-  def from_line(cls , s):
+  def from_line(cls , line, map_type, experiment = None):
     """
     Parse a line in a SOMA Map file to create a new object.
     """
-    fields = s.strip().split()
+
+    fields = line.strip().split()
     name = fields[0]
     length = int(fields[1])
     num_fragments = int(fields[2])
     fragments = [int(frag) for frag in fields[3:]]
-    return cls(name = name, length = length, num_fragments = num_fragments,
+
+    ret = cls(name = name, length = length, num_fragments = num_fragments,
+              type = map_type,
               fragments = fragments)
+
+    if experiment is not None:
+      ret.experiment = experiment
+
+    return ret
 
   def to_dict(self):
     d = get_dict_data(self.__dict__['_data'])
     d['name'] = self.name
     return d
 
-  meta = { 'abstract' : True }
+  meta = {'collection' : 'maps',
+          'indexes' : ['name',
+                        ('type', 'name')
+                      ]}
 
-class QueryMap(Map, Document):
-  meta = {'collection' : 'query_maps',
-          'indexes' : ['name']}
+QueryMap = Map
+ReferenceMap = Map
 
-class ReferenceMap(Map, Document):
-  meta = {'collection' : 'reference_maps',
-          'indexes' : ['name']}
+class Experiment(DictMixin, Document):
+
+  name = StringField(required = True)
+  description = StringField()
+  created = DateTimeField(default = datetime.datetime.now)
+
+  meta = {'collection': 'experiments'}
+
+  def get_alignments(self):
+    collection_name = '%s.alignments'%self.name
+    with switch_collection(Alignment, collection_name) as A:
+      A.ensure_indexes()
+      return list(A.objects)
+
+  def get_maps(self):
+    collection_name = '%s.maps'%self.name
+    with switch_collection(Map, collection_name) as A:
+      A.ensure_indexes()
+      return list(A.objects)
+
+  def get_query_map_ids(self):
+    """Get a list of query ids"""
+    collection_name = '%s.maps'%self.name
+    # Select a list of distinct query_id's from the alignments
+    with switch_collection(Map, collection_name) as A:
+      A.ensure_indexes()
+      return A.objects.filter(type = 'query').distinct('name')
+
+  def get_query_maps(self):
+    """Get a list of query ids"""
+    collection_name = '%s.maps'%self.name
+    # Select a list of distinct query_id's from the alignments
+    with switch_collection(Map, collection_name) as A:
+      A.ensure_indexes()
+      return A.objects.filter(type = 'query')
+
+  def get_ref_map_ids(self):
+    """Get a list of ref ids"""
+    collection_name = '%s.maps'%self.name
+    # Select a list of distinct query_id's from the alignments
+    with switch_collection(Map, collection_name) as A:
+      A.ensure_indexes()
+      return A.objects.filter(type = 'reference').distinct('name')
+
+  def get_ref_maps(self):
+    """Get a list of ref ids"""
+    collection_name = '%s.maps'%self.name
+    # Select a list of distinct query_id's from the alignments
+    with switch_collection(Map, collection_name) as A:
+      A.ensure_indexes()
+      return A.objects.filter(type = 'reference')
+
+# class QueryMap(Map, Document):
+#   meta = {'collection' : 'query_maps',
+#           'indexes' : ['name']}
+
+# class ReferenceMap(Map, Document):
+#   meta = {'collection' : 'reference_maps',
+#           'indexes' : ['name']}
 
