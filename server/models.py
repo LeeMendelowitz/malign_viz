@@ -9,7 +9,6 @@ from types import NoneType
 import datetime
 
 
-
 class DictConversionError(Exception):
   pass
 
@@ -28,6 +27,8 @@ def get_dict_data(elem):
     return [i for i in iter_items(elem)]
   elif isinstance(elem, dict):
     return {k:v for k,v in iter_dict_times(elem.iteritems())}
+  elif isinstance(elem, (datetime.date, datetime.datetime)):
+    return elem.isoformat()
   elif hasattr(elem, 'to_dict'):
     return elem.to_dict()
   else:

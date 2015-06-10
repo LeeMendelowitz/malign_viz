@@ -28,7 +28,7 @@ angular.module('malignerViewerApp')
     $scope.getAlignments = function() {
 
       console.log('Getting alignments for query ' + $scope.queryId);
-      $http({method: 'GET', url: 'http://localhost:5000/api/alignments/' + $scope.queryId}).
+      $http({method: 'GET', url: 'http://localhost:8001/api/alignments/' + $scope.queryId}).
         success(function(data, status, headers, config) {
         // this callback will be called asynchronously
         // when the response is available
@@ -56,7 +56,7 @@ angular.module('malignerViewerApp')
       }
 
       console.log('Getting query Map ' + $scope.queryId);
-      $http({method: 'GET', url: 'http://localhost:5000/api/queries/' + $scope.queryId}).
+      $http({method: 'GET', url: 'http://localhost:8001/api/queries/' + $scope.queryId}).
         success(function(data, status, headers, config) {
         // this callback will be called asynchronously
         // when the response is available

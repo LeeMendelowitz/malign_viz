@@ -24,7 +24,9 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <div class="container" ng-view=""></div>
+    <div class="container">
+        <div ui-view=""></div>
+    </div>
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
      <script>
@@ -52,6 +54,9 @@
     <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
     <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="bower_components/d3/d3.js"></script>
+    <script src="bower_components/ngstorage/ngStorage.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -60,9 +65,12 @@
         <script src="scripts/controllers/main.js"></script>
         <script src="scripts/controllers/list_queries.js"></script>
         <script src="scripts/controllers/query.js"></script>
+        <script src="scripts/controllers/list_experiments.js"></script>
+        <script src="scripts/controllers/experiment_edit_ctrl.js"></script>
         <script src="scripts/services/querymapdb.js"></script>
         <script src="scripts/directives/map.js"></script>
         <script src="scripts/services/queryiddb.js"></script>
+        <script src="scripts/services/api.js"></script>
         <script src="scripts/directives/alignment.js"></script>
         <script src="scripts/directives/chunkalignment.js"></script>
         <script src="scripts/directives/alignmentsorter.js"></script>

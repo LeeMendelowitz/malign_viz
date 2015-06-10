@@ -1,0 +1,27 @@
+<h1>Experiments</h1>
+
+<table class="table table-bordered">
+  <thead>
+    <th>Experiment</th>
+    <th>Description</th>
+    <th>Created</th>
+    <th>Controls</th>
+  </thead>
+  <tbody>
+    <tr ng-repeat = "exp in experiments">
+      <td>{{exp.name}}</td>
+      <td>{{exp.description}}</td>
+      <td>{{exp.created | date : short }}</td>
+      <td>
+        <button class="btn btn-sm btn-primary">View</button>
+        <button class="btn btn-sm btn-info" ng-click="open_edit_modal(exp)">Edit</button>
+        <button class="btn btn-sm btn-danger" href="#">Delete</button>
+      </td>
+
+    </tr>
+  </tbody>
+</table>
+
+<pre>
+{{ experiments | json }}
+</pre>

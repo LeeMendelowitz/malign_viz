@@ -29,7 +29,14 @@ def list_experiments():
     logger.debug("Response: " + str(d))
     return jsonify(d)
 
-@api_blueprint.route('/experiments/<experiment_id>')
+@api_blueprint.route('/experiments/<experiment_id>', methods=('GET', 'POST'))
+def get_or_update_experiment(experiment_id):
+    if request.method == 'POST':
+        return experiment_info_update(experiment_id)
+    else:
+        return experiment_info(experiment_id)
+
+
 def experiment_info(experiment_id):
     """
     List a summary for a single experiment
@@ -48,6 +55,39 @@ def experiment_info(experiment_id):
 
     logger.debug("Response: " + str(d))
     return jsonify(d)
+
+
+def experiment_info_update(experiment_id):
+    """
+    Update information for a single experiment
+    """
+    logger.info("Received experiment udpate request for experiment %s"%experiment_id)
+
+    try:
+        data = request.json
+        keys = data.keys()
+        required_keys = ('description', 'name')
+        for k in required_keys:
+            if k not in keys:
+                response = jsonify(msg="missing required keys")
+                response.status_code = 400
+                return response
+
+        e = Experiment.objects.filter(name = experiment_id).get()
+        e.description = data.get('description', None)
+        e.save()
+
+        return jsonify(msg = 'success')
+
+    except (DoesNotExist, MultipleObjectsReturned) as e:
+
+        response = jsonify()
+        response.status_code = 404
+        return response
+
+    logger.debug("Response: " + str(d))
+    return jsonify(d)
+
 
 @api_blueprint.route('/experiments/<experiment_id>/queries')
 def experiment_queries(experiment_id):

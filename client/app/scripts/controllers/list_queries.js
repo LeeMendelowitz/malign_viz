@@ -17,7 +17,7 @@ angular.module('malignerViewerApp')
 
       console.log('Making get queries request...');
 
-      $http({method: 'GET', url: 'http://localhost:5000/api/queries'}).
+      $http({method: 'GET', url: 'http://localhost:8001/api/queries'}).
         success(function(data, status, headers, config) {
       // this callback will be called asynchronously
       // when the response is available
