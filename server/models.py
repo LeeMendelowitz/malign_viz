@@ -4,6 +4,7 @@ Code for models
 from mongoengine import *
 from mongoengine.context_managers import switch_collection
 import json
+from collections import Counter
 from types import NoneType
 import datetime
 
@@ -63,7 +64,7 @@ class DictMixin(object):
     Utility method to convert self into a dictionary representation of
     basic JSON compatible types.
     """
-    r = get_dict_data(self.__dict__['_data'])
+    r = get_dict_data(self._data)
     return r
 
 #############################################
@@ -72,6 +73,7 @@ class Chunk(DictMixin, EmbeddedDocument):
   start = IntField()
   end = IntField()
   size = IntField()
+  is_boundary = BooleanField()
 
   """
   def __str__(self):
@@ -114,8 +116,6 @@ class MatchedChunk(DictMixin, EmbeddedDocument):
 
 
 
-
-
 class Alignment(DictMixin, Document):  
   doc_type = StringField(default = 'alignment', required = True)
   experiment = StringField()
@@ -134,6 +134,7 @@ class Alignment(DictMixin, Document):
   query_num_sites = IntField()
   max_chunk_sizing_score = FloatField()
   total_score = FloatField()
+  query_scaling_factor = FloatField()
   ref_is_forward = BooleanField()
   query_interior_size = IntField()
   matched_chunks = ListField(field = EmbeddedDocumentField(MatchedChunk))
@@ -187,7 +188,7 @@ class Map(DictMixin, Document):
     return ret
 
   def to_dict(self):
-    d = get_dict_data(self.__dict__['_data'])
+    d = get_dict_data(self._data)
     d['name'] = self.name
     return d
 
@@ -207,47 +208,86 @@ class Experiment(DictMixin, Document):
 
   meta = {'collection': 'experiments'}
 
-  def get_alignments(self):
+  @property
+  def alignment_collection(self):
     collection_name = '%s.alignments'%self.name
-    with switch_collection(Alignment, collection_name) as A:
+    return collection_name
+
+  @property
+  def map_collection(self):
+    collection_name = '%s.maps'%self.name
+    return collection_name  
+
+  def ensure_related_indexes(self):
+    with switch_collection(Alignment, self.alignment_collection) as A:
       A.ensure_indexes()
-      return list(A.objects)
+    with switch_collection(Map, self.map_collection) as M:
+      M.ensure_indexes()
+
+  def get_alignments(self):
+    with switch_collection(Alignment, self.alignment_collection) as A:
+      A.ensure_indexes()
+      return A.objects
+
+  def get_alignments_for_query(self, query_id):
+    alns = self.get_alignments()
+    return alns.filter(query_id = query_id)
+
+  def get_summary(self):
+    """Return a summary of this experiment
+    """
+    ret = {}
+    ret['name'] = self.name
+    ret['description'] = self.description
+    ret['created'] = self.created
+    ret['num_query_maps'] = len(self.get_query_map_ids())
+    ret['num_ref_maps'] = len(self.get_ref_map_ids())
+    with switch_collection(Alignment, self.alignment_collection) as A:
+
+      A.ensure_indexes()
+      ret['num_alignments'] = A.objects.count()
+
+      # Get the number of alignments per query
+      alignments = A.objects.only('query_id')
+      query_id_counts = Counter(a.query_id for a in alignments)
+      aligned_queries = [{"query_id" : query_id, 
+                          "aln_count": aln_count} for query_id, aln_count in query_id_counts.iteritems()]
+      ret['aligned_queries'] = aligned_queries
+
+    # Get a list of query_ids with the number of alignments for each query.
+    # Mongoengine does not have good aggregation support so do it here in memory.
+    return ret
 
   def get_maps(self):
-    collection_name = '%s.maps'%self.name
-    with switch_collection(Map, collection_name) as A:
+    with switch_collection(Map, self.map_collection) as A:
       A.ensure_indexes()
-      return list(A.objects)
+      return  A.objects
 
   def get_query_map_ids(self):
     """Get a list of query ids"""
-    collection_name = '%s.maps'%self.name
     # Select a list of distinct query_id's from the alignments
-    with switch_collection(Map, collection_name) as A:
+    with switch_collection(Map, self.map_collection) as A:
       A.ensure_indexes()
       return A.objects.filter(type = 'query').distinct('name')
 
   def get_query_maps(self):
     """Get a list of query ids"""
-    collection_name = '%s.maps'%self.name
     # Select a list of distinct query_id's from the alignments
-    with switch_collection(Map, collection_name) as A:
+    with switch_collection(Map, self.map_collection) as A:
       A.ensure_indexes()
       return A.objects.filter(type = 'query')
 
   def get_ref_map_ids(self):
     """Get a list of ref ids"""
-    collection_name = '%s.maps'%self.name
     # Select a list of distinct query_id's from the alignments
-    with switch_collection(Map, collection_name) as A:
+    with switch_collection(Map, self.map_collection) as A:
       A.ensure_indexes()
       return A.objects.filter(type = 'reference').distinct('name')
 
   def get_ref_maps(self):
     """Get a list of ref ids"""
-    collection_name = '%s.maps'%self.name
     # Select a list of distinct query_id's from the alignments
-    with switch_collection(Map, collection_name) as A:
+    with switch_collection(Map, self.map_collection) as A:
       A.ensure_indexes()
       return A.objects.filter(type = 'reference')
 

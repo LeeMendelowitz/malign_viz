@@ -1,0 +1,24 @@
+server {
+
+    error_log /Users/Lee/workspace/nmaps/malign_viz/logs/nginx_error.log debug;
+    rewrite_log on;
+
+    # This is the test server
+    listen 8000;
+
+    location /api {
+        proxy_pass http://127.0.0.1:8001;
+    }
+
+    location / {
+        alias /Users/Lee/workspace/nmaps/malign_viz/client/app/;
+    }
+
+    location /bower_components/ {
+      alias /Users/Lee/workspace/nmaps/malign_viz/client/app/bower_components/;
+      try_files $uri $uri/;
+    }
+    
+    ####################################################################################
+
+}

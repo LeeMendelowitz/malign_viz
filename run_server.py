@@ -4,8 +4,12 @@ Run the server
 """
 import os
 import sys
+
+from server.common import logging_utils
 import logging
-logging.basicConfig(level=logging.DEBUG)
+
+root_logger = logging_utils.create_root_logger()
+root_logger.setLevel(logging.DEBUG)
 
 # sys.path includes 'server/lib' due to appengine_config.py
 import flask
@@ -13,6 +17,7 @@ from flask import Flask, Blueprint, redirect
 from server.api import api_blueprint
 from server.config import DevelopmentConfig, Config
 import server.db
+
 
 server.db.connect()
 
@@ -26,4 +31,5 @@ def root():
   return app.send_static_file('index.html')
 
 if __name__ == '__main__':
-    app.run()
+    app.debug = True
+    app.run(host='127.0.0.1', port=8001)
