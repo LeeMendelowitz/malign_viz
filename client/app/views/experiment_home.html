@@ -1,15 +1,20 @@
 
-<h1>Debug</h1>
-<h4>StateParams</h4>
+<ol class="breadcrumb">
+  <li><a ui-sref="experiments.list">Experiments</a></li>
+  <li class="active">{{experimentId}}</a></li>
+</ol>
+
+
 <pre>
 {{ $stateParams }}
 </pre>
 
 
-<h1>Experiment: {{experimentId}}</h1>
+<!-- <h1>Experiment: {{experimentId}}</h1> -->
 
-<h2>Description</h2>
+<h2>Description <button class="btn btn-sm btn-info" ng-click="open_edit_modal()">Edit</button></h2>
 <p>{{experiment_info.description || "None."}}</p>
+
 
 <h2>Summary</h2>
 

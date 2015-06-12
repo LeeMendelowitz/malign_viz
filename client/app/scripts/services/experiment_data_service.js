@@ -94,6 +94,11 @@ angular.module('malignerViewerApp')
 
     };
 
+    self.updateExperimentDescription = function(experiment_name, description) {
+      var exp = self._get_experiment(experiment_name);
+      exp.info['description'] = description;
+      self._save_experiment(exp);
+    };
 
 
     //////////////////////////////////////////////////////

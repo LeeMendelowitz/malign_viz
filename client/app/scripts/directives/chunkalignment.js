@@ -9,7 +9,9 @@ angular.module('malignerViewerApp')
       link: function postLink(scope, element, attrs) {
 
 
-        var setTooltipData = function(data, index) {
+        var setTooltipData = function(data, index, should_apply) {
+
+          if (typeof(should_apply) === 'undefined') should_apply = true;
 
           var d = {};
           d.num_query_frags = data.queryChunk.fragments.length;
@@ -20,10 +22,13 @@ angular.module('malignerViewerApp')
           d._data = data;
           d.index = index;
 
-          scope.$apply(function() {
+          if(should_apply) {
+            scope.$apply(function() {
+              scope.tooltipData = d;
+            });
+          } else {
             scope.tooltipData = d;
-            console.log(scope.tooltipData);
-          });
+          }
 
         };
 
@@ -118,8 +123,12 @@ angular.module('malignerViewerApp')
           });
 
 
+
           // Draw each matched chunk.
           var container = d3.select(element[0]);
+
+          // Clear the content of the svg
+          container.select('svg').remove();
 
           var svg = container.append('svg')
                              .attr('width', plotw)
@@ -272,9 +281,15 @@ angular.module('malignerViewerApp')
                                 return d.chunkFillColor;
                              });
 
+          // Set the tooltip data to be that of the first chunk
+          setTooltipData(data[0], 0, false);
+
         };
 
         scope.$watch('processedReference', draw_chunk_alignment, true);
+
+
+
 
       }
     };

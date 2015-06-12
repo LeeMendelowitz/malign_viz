@@ -8,8 +8,13 @@
 <h1> {{experimentId}} </h1>
 
 <!-- QUERY MAP DETAILS -->
+<ol class="breadcrumb">
+  <li><a ui-sref="experiments.list">Experiments</a></li>
+  <li><a ui-sref="experiment.home({experimentId: experimentId})">{{experimentId}}</a></li>
+  <li class="active">{{queryId}}</li>
+</ol>
 
-<h3>Query</h3>
+<!-- <h3>Query</h3> -->
 
 <table class="table table-bordered">
   <tr>
@@ -37,6 +42,9 @@
 <!-- Alignments Summary -->
 
 <h3>Alignments <button class="btn btn-sm btn-primary" ng-click="setActiveAlignment('all')">View All</button></h3>
+
+<p>To view a single alignment, click the "View" button in the corresponding row. To view all alignments, click the
+"View All" button above. Alignment visualizations appear below.</p>
 
 <table ng-table="alignmentTableParams" class="table table-bordered table-condensed">
     <tr ng-repeat="aln in $data">

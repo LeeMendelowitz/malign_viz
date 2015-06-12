@@ -8,20 +8,20 @@
   {{ experiment2 | json }}
   </pre>
  -->
-  <p>Update the informationa about this experiment.</p>
+  <p>Update the information about this experiment.</p>
 
   <form>
 
     <div class="form-group">
       <label for="name_input">Name</label>
       <input type="text" class="form-control" id="name_input" placeholder="Experiment name"
-      ng-model="experiment_form.name" disabled>
+      ng-model="experiment_info_form.name" disabled>
     </div>
 
     <div class="form-group">
       <label for="description_input">Description</label>
       <textarea rows="5" class="form-control" id="description_input" placeholder="Experiment Description"
-        ng-model="experiment_form.description"></textarea>
+        ng-model="experiment_info_form.description"></textarea>
     </div>
 
   </form>
@@ -29,6 +29,6 @@
 </div>
 
 <div class="modal-footer">
-    <button class="btn btn-success" ng-click="update(experiment_form)">Update</button>
+    <button class="btn btn-success" ng-click="update(experiment_info_form)">Update</button>
     <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
 </div>

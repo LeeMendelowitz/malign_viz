@@ -2,7 +2,7 @@
 
 angular.module('malignerViewerApp')
 
-  .controller('experimentCtrl', function ($scope, $stateParams, $http, $location, $filter, api, ngTableParams, experimentDataService) {
+  .controller('experimentCtrl', function ($scope, $stateParams, $http, $location, $filter, $modal, api, ngTableParams, experimentDataService) {
 
     // Get the experiment name from the stateParams
     var experimentId = $stateParams.experimentId
@@ -42,6 +42,31 @@ angular.module('malignerViewerApp')
           });
         }
     });
+
+    $scope.open_edit_modal = function() {
+
+
+      var modalInstance = $modal.open({
+        animation: true,
+        templateUrl: 'views/experiment_edit_modal.html',
+        controller: 'experimentEditCtrl',
+        size: 'lg',
+        resolve: {
+          experiment_info: function() {
+            return experiment_data_promise.then(function(experiment_data) {
+              return experiment_data.info;
+            });
+          }
+        }
+      });
+
+      modalInstance.result.then(function (data) {
+        // Do something with data
+      }, function () {
+
+      });
+
+    };
 
 
 

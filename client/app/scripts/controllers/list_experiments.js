@@ -26,7 +26,7 @@ angular.module('malignerViewerApp')
         controller: 'experimentEditCtrl',
         size: 'lg',
         resolve: {
-          experiment: function() {
+          experiment_info: function() {
             return $scope.experiment;
           }
         }
