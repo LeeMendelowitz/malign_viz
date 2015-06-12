@@ -2,79 +2,61 @@
 
 angular.module('malignerViewerApp')
 
-  .controller('QueryCtrl', function ($scope, $routeParams, $http, mapDB, $location, $anchorScroll) {
+  .controller('QueryCtrl', function ($scope, $stateParams, $http, $q, $filter, $state, experimentDataService,
+      $location, $anchorScroll, experimentData, ngTableParams, queryId, experimentId, alignments) {
 
-    $scope.routeParams = $routeParams;
-
-    $scope.queryId = $routeParams.queryId;
-    console.log('Have route params: ', $routeParams);
-
+    $scope.queryId = queryId;
+    $scope.experimentId = experimentId;
     $scope.status_message = 'Retrieving alignments...';
+    $scope.experimentData = experimentData;
+    $scope.queryMap = experimentDataService.getQueryMap($scope.experimentId, $scope.queryId);
+    $scope.alignments = alignments;
 
+    $scope.active_alignments = [];
 
-    $scope.scrollTo = function(id) {
-      // Hack to get scrollTo work:
-      // http://stackoverflow.com/a/15935517
-      // 1. Set the hash.
-      // 2. Call anchorScroll, which uses the hash.
-      // 3. Reset the hash, to avoid a route change.
-      var old = $location.hash();
-      $location.hash(id);
-      $anchorScroll();
-      $location.hash(old);
-    };
+    $scope.alignmentTableParams = new ngTableParams({
+        page: 1,            // show first page
+        count: 10,           // count per page
+        sorting: {
+          aln_rank: 'asc'
+        }
+      }, {
+        total: function() { return 0; }, // length of data
+        getData: function ($defer, params) {
 
+            var data = alignments;
 
-    $scope.getAlignments = function() {
+            // use build-in angular filter
+            var orderedData = params.sorting() ?
+                    $filter('orderBy')(data, params.orderBy()) :
+                    data;
 
-      console.log('Getting alignments for query ' + $scope.queryId);
-      $http({method: 'GET', url: 'http://localhost:8001/api/alignments/' + $scope.queryId}).
-        success(function(data, status, headers, config) {
-        // this callback will be called asynchronously
-        // when the response is available
+            params.total = function() { return data.length;};
 
-        $scope.alignments = data.alignments;
-        $scope.status_message = 'Retrieved ' + $scope.alignments.length + ' alignments.';
-        console.log(data.alignments);
-      }).
-      error(function(data, status, headers, config) {
-      // called asynchronously if an error occurs
-      // or server returns response with an error status.
-        $scope.status_message = 'Failed to retrieve alignments.';
-      });
-    };
+            $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+          
+        }
+    });
 
-    $scope.getQueryMap = function() {
-      // Get the query Map from the server. Used cached map if we have it.
+    $scope.setActiveAlignment = function(aln_rank) {
 
-      var queryMap = mapDB.getMap($scope.queryId);
-
-      if(queryMap) {
-        console.log("loaded query map from cache.");
-        $scope.queryMap = queryMap;
+      if(!aln_rank) {
+        $scope.active_alignments = [];
         return;
       }
+      // Select the 1-based aln_rank ranked alignment
+      // or all alignments if aln_rank === 'all'.
+      if (aln_rank === 'all') {
+        $scope.active_alignments = $scope.alignments;
+      } else {
+        $scope.active_alignments = [$scope.alignments[aln_rank - 1]];
+      }
 
-      console.log('Getting query Map ' + $scope.queryId);
-      $http({method: 'GET', url: 'http://localhost:8001/api/queries/' + $scope.queryId}).
-        success(function(data, status, headers, config) {
-        // this callback will be called asynchronously
-        // when the response is available
+      console.log('Active alignments: ', $scope.active_alignments);
 
-        $scope.queryMap = data.query_map;
+      $state.go('experiment.query.alignment', {experimentId: $stateParams.experimentId, queryId: $stateParams.queryId, alnRank: aln_rank});
 
-        //console.log($scope.queryMap);
-        mapDB.addMap($scope.queryMap);
-      }).
-      error(function(data, status, headers, config) {
-      // called asynchronously if an error occurs
-      // or server returns response with an error status.
-        $scope.status_message = 'Failed to retrieve alignments.';
-      });
     };
-    
-    $scope.getQueryMap();
-    $scope.getAlignments();
 
 
   });

@@ -1,17 +1,21 @@
 'use strict';
 
 angular.module('malignerViewerApp')
-  .controller('ListExperimentsCtrl', function ($scope, api, $modal) {
+  .controller('ListExperimentsCtrl', function ($scope, api, $modal, $state) {
 
 
     api.get_experiments().then(function(data) {
       $scope.experiments = data.experiments || [];
     });
 
+    $scope.go_to_experiment = function(experimentId) {
+      $state.go('experiment.home', {experimentId: experimentId});
+    };
+
     $scope.open_edit_modal = function(experiment) {
 
       $scope.experiment = experiment;
-      
+
       console.log("opening with experiment: ", experiment);
 
       var my_experiment = experiment;

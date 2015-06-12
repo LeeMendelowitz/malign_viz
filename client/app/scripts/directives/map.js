@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('malignerViewerApp')
-  .directive('map', function (mapDB) {
+  .directive('map', function () {
     return {
       templateUrl: '/views/map.html',
       restrict: 'E',
@@ -11,7 +11,7 @@ angular.module('malignerViewerApp')
       link: function postLink(scope, element, attrs) {
 
         var plotw = 800;
-        var ploth = 200;
+        var ploth = 80;
         
         var barh = 50;
         var barspacing = 2;

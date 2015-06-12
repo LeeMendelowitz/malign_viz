@@ -2,13 +2,14 @@
 
 
 angular.module('malignerViewerApp')
-  .directive('alignment', function (mapDB) {
+  .directive('alignment', function (experimentDataService) {
     return {
       templateUrl: '/views/alignment.html',
       restrict: 'E',
       scope: {
         queryMap: '=queryMap',
-        alignment: '=alignmentData'
+        alignment: '=alignmentData',
+        experimentId: '='
       },
 
       controller: function($scope, $element, $attrs, $window) {
@@ -22,44 +23,28 @@ angular.module('malignerViewerApp')
           // Get the reference map for the alignment.
           // Store the slice of the reference that participates in alignment on the scope.
           var ref_id = $scope.alignment.ref_id;
-          var refMapPromise = mapDB.getReferenceMap($scope.alignment.ref_id);
-          refMapPromise.then( function(refMap) {
+          var refMap = experimentDataService.getReferenceMap($scope.experimentId, $scope.alignment.ref_id);
 
-                $scope.referenceMap = refMap;
+          $scope.referenceMap = refMap;
+          var refFragments = refMap.fragments.slice(); 
+          $scope.refFragments = refFragments;
 
-                // Orient fragments with the alignment. If query
-                // is aligned to reverse reference, we need to
-                // reverse the reference fragments.
-                var fragments = refMap.fragments.slice();
-                if ( !$scope.alignment.ref_is_forward ) {
-                  fragments = fragments.reverse();
-                }
+          // Set the slice of the reference map that is in the alignment.
+          var matchedChunks = $scope.alignment.rescaled_matched_chunks;
+          var firstChunk = matchedChunks[0];
+          var lastChunk = matchedChunks[matchedChunks.length-1];
+          var refFragmentsSlice = refFragments.slice(firstChunk.ref_chunk.start, lastChunk.ref_chunk.end);
 
-                $scope.orientedReferenceFragments = fragments;
+          $scope.referenceFragmentsSlice = refFragmentsSlice;
+          $scope.referenceMapSlice = {refFragments: refFragmentsSlice};
 
-                // Set the slice of the reference map that is in the alignment.
-                var matchedChunks = $scope.alignment.rescaled_matched_chunks;
-                var firstChunk = matchedChunks[0];
-                var lastChunk = matchedChunks[matchedChunks.length-1];
-                var refFragmentsSlice = fragments.slice(firstChunk.ref_chunk.start, lastChunk.ref_chunk.end);
+          addInteriorFragments();
+          applyQueryScalingFactor();
 
-                $scope.referenceFragmentsSlice = refFragmentsSlice;
-                $scope.referenceMapSlice = {fragments: refFragmentsSlice};
+          $scope.processedReference = $scope.processedReference + 1;
 
-                addInteriorFragments();
-                applyQueryScalingFactor();
-
-                $scope.processedReference = $scope.processedReference + 1;
-
-                $scope.firstChunk = firstChunk;
-                $scope.lastChunk = lastChunk;
-          },
-            function(msg) {
-              console.log("Error getting ref map: "  + msg);
-              $window.alert("Error getting ref map: "  + msg);
-            }
-          );
-
+          $scope.firstChunk = firstChunk;
+          $scope.lastChunk = lastChunk;
 
       
         };
@@ -105,12 +90,12 @@ angular.module('malignerViewerApp')
           // Process the matched chunks and add interior fragments.
     
           angular.forEach($scope.alignment.matched_chunks, function(chunk) {
-            chunk.ref_chunk.fragments = $scope.orientedReferenceFragments.slice(chunk.ref_chunk.start, chunk.ref_chunk.end);
+            chunk.ref_chunk.fragments = $scope.refFragments.slice(chunk.ref_chunk.start, chunk.ref_chunk.end);
             chunk.query_chunk.fragments = $scope.queryMap.fragments.slice(chunk.query_chunk.start, chunk.query_chunk.end);
           });
 
           angular.forEach($scope.alignment.rescaled_matched_chunks, function(chunk) {
-            chunk.ref_chunk.fragments = $scope.orientedReferenceFragments.slice(chunk.ref_chunk.start, chunk.ref_chunk.end);
+            chunk.ref_chunk.fragments = $scope.refFragments.slice(chunk.ref_chunk.start, chunk.ref_chunk.end);
             chunk.query_chunk.fragments = $scope.queryMap.fragments
               .slice(chunk.query_chunk.start, chunk.query_chunk.end)
               .map(function(frag) { 

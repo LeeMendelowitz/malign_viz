@@ -255,7 +255,7 @@ angular.module('malignerViewerApp')
                                           .attr('y2', hBar)
                                           .classed('missed-site', true);
 
-          var refLabels = refChunks.append('text')
+          var refLabels = refChunks.append('text')  
                              .text( function(d) { 
                                return (d.refChunk.size/1000.0).toFixed(2);
                              })

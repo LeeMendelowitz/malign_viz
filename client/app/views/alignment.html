@@ -1,69 +1,84 @@
 
 <div class="alignment-container">
 
-  <h3>Summary</h3>
-  <table class="table table-bordered">
-    <tr>
-      <td>
-        Reference
-      </td>
-      <td>
-        {{ alignment.ref_id }}
+<!--   <pre>
+  {{ alignment | json }}
+  </pre> -->
 
-        ({{ firstChunk.ref_chunk.start }}, 
-        {{ lastChunk.ref_chunk.end}})
-        
-        {{ alignment.ref_is_forward ? 'Forward' : 'Reverse' }}
-      </td>
-    </tr>
-    <tr>
-      <td>
-          Score
-      </td>
-      <td>
-        {{ alignment.total_score_rescaled | number:3 }}
-      </td>
-    </tr>
-    <tr>
-      <td>
-        Ref miss score
-      </td>
-      <td>
-        {{ alignment.rescaled_score.ref_miss_score }}
-      </td>
-    </tr>
-    <tr>
-      <td>
-        Sizing score
-      </td>
-      <td>
-        {{ alignment.rescaled_score.sizing_score | number:3 }}
-      </td>
-    </tr>
-    <tr>
-      <td>
-        Reference Misses
-      </td>
-      <td>
-        {{ alignment.ref_misses }}
-      </td>
-    </tr>
-    <tr>
-      <td>
-        Query Scaling Factor
-      </td>
-      <td>
-        {{ alignment.query_scaling_factor | number:3 }}
-      </td>
-    </tr>
-    <tr>
-      <td>
-        Total Log. Likelihood
-      </td>
-      <td>
-        {{ alignment.total_log_likelihood | number:3 }}
-      </td>
-    </tr>
+  <table class="table table-bordered table-condensed">
+    <tbody>
+      <tr>
+        <th>
+          Reference
+        </th>
+        <td>
+          {{ alignment.ref_id }}
+        </td>
+      </tr>
+      <tr>
+        <th>Reference Location</th>
+        <td>{{ firstChunk.ref_chunk.start }} to {{ lastChunk.ref_chunk.end}},
+          {{ alignment.is_forward ? 'Forward' : 'Reverse' }}
+        </td>
+      </tr>
+      <tr>
+      <tr>
+        <th>
+            Total Score
+        </th>
+        <td>
+          {{ alignment.total_score_rescaled | number:3 }}
+        </td>
+      </tr>
+      <tr>
+        <th>
+          Ref miss score
+        </th>
+        <td>
+          {{ alignment.rescaled_score.ref_miss_score }}
+        </td>
+      </tr>
+      <tr>
+        <th>
+          Sizing score
+        </th>
+        <td>
+          {{ alignment.rescaled_score.sizing_score | number:3 }}
+        </td>
+      </tr>
+      <tr>
+        <th>
+          Reference Misses (rate)
+        </th>
+        <td>
+          {{ alignment.ref_misses }} ({{ alignment.ref_miss_rate*100 | number:2 }}%)
+        </td>
+      </tr>
+      <tr>
+        <th>
+          Query Misses (rate)
+        </th>
+        <td>
+          {{ alignment.query_misses }} ({{ alignment.query_miss_rate*100 | number:2 }}%)
+        </td>
+      </tr>
+      <tr>
+        <th>
+          Query Scaling Factor
+        </th>
+        <td>
+          {{ alignment.query_scaling_factor | number:2 }}
+        </td>
+      </tr>
+  <!--     <tr>
+        <td>
+          Total Log. Likelihood
+        </td>
+        <td>
+          {{ alignment.total_log_likelihood | number:3 }}
+        </td>
+      </tr> -->
+    </tbody>
   </table>
   
 <!--   

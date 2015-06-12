@@ -1,0 +1,88 @@
+<!-- <pre>
+{{ $stateParams }}
+</pre>
+
+
+{{ $stateParams.queryId }}
+
+<h1> {{experimentId}} </h1>
+
+<!-- QUERY MAP DETAILS -->
+
+<h3>Query</h3>
+
+<table class="table table-bordered">
+  <tr>
+    <td class="row-header">Experiment</td>
+    <td><a ui-sref="experiment.home({experimentId: experimentId})">{{experimentId}}</a></td>
+  </tr>
+  <tr>
+    <td class="row-header">Map</td>
+    <td>{{ queryMap.name }}</td>
+  </tr>
+  <tr>
+    <td class="row-header">Fragments</td>
+    <td>{{ queryMap.num_fragments }}</td>
+  </tr>
+  <tr>
+    <td class="row-header">Length</td>
+    <td>{{ queryMap.length | number}} bp</td>
+  </tr>
+</table>
+
+<map map-name={{ queryId }} map-data="queryMap"></map>
+
+<hr>
+
+<!-- Alignments Summary -->
+
+<h3>Alignments <button class="btn btn-sm btn-primary" ng-click="setActiveAlignment('all')">View All</button></h3>
+
+<table ng-table="alignmentTableParams" class="table table-bordered table-condensed">
+    <tr ng-repeat="aln in $data">
+        <td data-title="'Rank'" sortable="'aln_rank'">
+            {{aln.aln_rank}}
+        </td>
+        <td data-title="'Reference'" sortable="'ref_map'">
+          {{aln.ref_id}}
+        </td>
+        <td data-title="'Start (bp)'" sortable="'ref_start_bp'">
+         {{aln.ref_start_bp | number:0}}
+        </td>
+        <td data-title="'End (bp)'" sortable="'ref_end_bp'">
+         {{aln.ref_end_bp | number:0 }}
+        </td>
+        <td data-title="'Matched Sites'" sortable="'num_matched_sites'">
+          {{aln.num_matched_sites | number:0}}
+        </td>
+        <td data-title="'Score'" sortable="'total_score_rescaled'">
+          {{aln.total_score_rescaled | number:2}}
+        </td>
+        <td data-title="'Sizing Score'" sortable="'rescaled_score.sizing_score'">
+          {{aln.rescaled_score.sizing_score | number:2 }}
+        </td>
+        <td data-title="'Query Miss Score'" sortable="'rescaled_score.query_miss_score'">
+          {{aln.rescaled_score.query_miss_score | number:2 }}
+        </td>
+        <td data-title="'Ref Miss Score'" sortable="'rescaled_score.ref_miss_score'">
+          {{aln.rescaled_score.ref_miss_score | number:2 }}
+        </td>
+        <td data-title="'Query Miss Rate'" sortable="'query_miss_rate'">
+          {{aln.query_miss_rate*100 | number:1}}%
+        </td>
+        <td data-title="'Ref Miss Rate'" sortable="'ref_miss_rate'">
+          {{aln.ref_miss_rate*100 | number:1}} %
+        </td>
+        <td data-title="'View'"> 
+          <button ng-click="setActiveAlignment(aln.aln_rank)" class="btn btn-sm btn-success">View</button>
+        </td>
+    </tr>
+</table>
+
+<hr>
+
+<!-- View for active alignment or alignments -->
+<ui-view/>
+
+
+</div>

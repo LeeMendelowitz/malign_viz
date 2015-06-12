@@ -8,7 +8,8 @@ var app = angular
     'ui.router',
     'ngStorage',
     'ngRoute',
-    'ui.bootstrap'
+    'ui.bootstrap',
+    'ngTable'
   ]);
   // .config(function ($routeProvider, $locationProvider) {
 
@@ -58,14 +59,89 @@ app.config(
   ['$stateProvider', '$urlRouterProvider',
     function ($stateProvider, $urlRouterProvider) {
 
-      $urlRouterProvider.otherwise('/experiments');
+      $urlRouterProvider.otherwise('/experiments/list');
 
       $stateProvider
         .state('experiments', {
           url: '/experiments',
+          abstract: true,
+          template: '<ui-view/>'
+        })
+        .state('experiments.list', {
+          url: '/list',
           templateUrl: '/views/experiments.html',
           controller: 'ListExperimentsCtrl'
+        })
+        .state('experiment', {
+          url: '/experiment/:experimentId',
+          abstract: true,
+          template: "<ui-view/>",
+          resolve: {
+            experimentId : function($stateParams) {
+              return $stateParams.experimentId;
+            }
+          }
+        })
+        .state('experiment.home', {
+          url: '/',
+          templateUrl: '/views/experiment_home.html',
+          controller: 'experimentCtrl'
+        })
+        .state('experiment.query', {
+          url: '/query/:queryId',
+          templateUrl: '/views/experiment_query.html',
+          controller: 'QueryCtrl',
+          resolve: {
+            'experimentData' : function(experimentDataService, $stateParams) {
+              return experimentDataService.loadExperimentData($stateParams.experimentId);
+            },
+            'queryId' : function($stateParams) {
+              return $stateParams.queryId;
+            },
+            'alignments' : function($stateParams, $q, $http) {
+
+              var deferred = $q.defer();
+
+              $http({method: 'GET', url: '/api/experiments/' + $stateParams.experimentId + '/alignments/' + $stateParams.queryId}).
+                success(function(data, status, headers, config) {
+
+                // this callback will be called asynchronously
+                // when the response is available
+                var alignments = data.alignments || [];
+
+                // Sort by alignment score and add alignment ranks.
+                alignments.sort(function(a1, a2) { return a1.total_score_rescaled - a2.total_score_rescaled; });
+
+                for(var i = 0; i < alignments.length; i++) {
+                  alignments[i]['aln_rank'] = i + 1;
+                }
+
+                deferred.resolve(alignments);
+
+              }).error(function(data) {
+                console.log("ERROR! ", data);
+              });
+
+              return deferred.promise;
+            }
+          }
+        })
+        .state('experiment.query.alignment', {
+          url: '/alignment/:alnRank',
+          templateUrl: '/views/experiment_query_alignments.html',
+          controller: function(experimentId, queryId, experimentData, $stateParams, $scope) {
+
+            // Call a function published on the experimentQuery controller
+            // This will set the active alignment
+            $scope.setActiveAlignment($stateParams.alnRank);
+
+          }
         });
+        // .state('experiment.query.aln', {
+        //   url: '/alignment/:alnRank',
+
+
+        // });
 
       // $stateProvider
       //   .state('loading', {

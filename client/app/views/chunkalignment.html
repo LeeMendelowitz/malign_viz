@@ -7,9 +7,8 @@
 
       <div ng-show="tooltipData">
         <h4>
-        Chunk {{ tooltipData.index + 1 }} of {{ alignment.matched_chunks.length }}
+        Chunk {{ tooltipData.index + 1 }} of {{ alignment.rescaled_matched_chunks.length }}
         </h4>
-
 
         <table class="table table-bordered table-condensed">
           <thead>
@@ -26,22 +25,22 @@
               <td> {{ tooltipData.num_ref_frags }} </td>
               <td>[
                 <span ng-repeat="f in tooltipData.ref_chunk.fragments">
-                {{ f | number }} <span ng-hide="$last"> | </span>
+                {{ f | number:0 }} <!-- <span ng-hide="$last"> | </span> -->
                 </span>
                 ]
               </td>
-              <td> {{ tooltipData.ref_chunk.size | number }}</td>
+              <td> {{ tooltipData.ref_chunk.size | number:0 }}</td>
             </tr>
             <tr>
               <td> Query </td>
               <td> {{ tooltipData.num_query_frags }} </td>
               <td>[
                 <span ng-repeat="f in tooltipData.query_chunk.fragments">
-                {{ f | number }} <span ng-hide="$last"> | </span>
+                {{ f | number:0 }} <!-- <span ng-hide="$last"> | </span> -->
                 </span>
                 ]
               </td>
-              <td> {{ tooltipData.query_chunk.size | number }}</td>
+              <td> {{ tooltipData.query_chunk.size | number:0 }}</td>
             </tr>
           </tbody>
         </table>

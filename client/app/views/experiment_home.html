@@ -1,0 +1,51 @@
+
+<h1>Debug</h1>
+<h4>StateParams</h4>
+<pre>
+{{ $stateParams }}
+</pre>
+
+
+<h1>Experiment: {{experimentId}}</h1>
+
+<h2>Description</h2>
+<p>{{experiment_info.description || "None."}}</p>
+
+<h2>Summary</h2>
+
+<table class="table">
+  <tbody>
+    <tr>
+      <th>Num. Alignments</th><td>{{experiment_info.num_alignments}}</td>
+    </tr>
+    <tr>
+      <th>Query Maps</th><td>{{experiment_info.num_query_maps}}</td>
+    </tr>
+    <tr>
+      <th>Query Maps with Alignments</th><td>{{ experiment_info.aligned_queries.length }}</td>
+    </tr>
+    <tr>
+      <th>Num. Ref Maps</th><td>{{experiment_info.num_ref_maps}}</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Aligned Queries</h2>
+
+  <table ng-table="tableParams" class="table table-bordered table-condensed">
+      <tr ng-repeat="query in $data">
+          <td data-title="'Name'" sortable="'query_id'">
+              <a ui-sref="experiment.query({queryId: query.query_id})">{{query.query_id}}</a>
+          </td>
+          <td data-title="'Aln. Count'" sortable="'aln_count'">
+              {{query.aln_count}}
+          </td>
+      </tr>
+  </table>
+
+
+<div ui-view="query">
+
+</div>
+
+  

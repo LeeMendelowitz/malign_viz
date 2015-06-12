@@ -5,7 +5,9 @@
     <th>Experiment</th>
     <th>Description</th>
     <th>Created</th>
-    <th>Controls</th>
+    <th></th>
+    <th></th>
+    <th></th>
   </thead>
   <tbody>
     <tr ng-repeat = "exp in experiments">
@@ -13,8 +15,12 @@
       <td>{{exp.description}}</td>
       <td>{{exp.created | date : short }}</td>
       <td>
-        <button class="btn btn-sm btn-primary">View</button>
+        <button class="btn btn-sm btn-primary" ng-click="go_to_experiment(exp.name)">View</button>
+      </td>
+      <td>
         <button class="btn btn-sm btn-info" ng-click="open_edit_modal(exp)">Edit</button>
+      </td>
+      <td>
         <button class="btn btn-sm btn-danger" href="#">Delete</button>
       </td>
 
