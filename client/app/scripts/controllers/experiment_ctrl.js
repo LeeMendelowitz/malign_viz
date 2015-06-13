@@ -28,7 +28,7 @@ angular.module('malignerViewerApp')
         getData: function ($defer, params) {
           experiment_data_promise.then(function(experiment_data) {
 
-            var data = experiment_data.info.aligned_queries;
+            var data = experiment_data.info.aligned_queries || [];
 
             // use build-in angular filter
             var orderedData = params.sorting() ?

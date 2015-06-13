@@ -70,6 +70,11 @@ angular.module('malignerViewerApp')
 
     this.get_experiments = make_get_endpoint('/api/experiments');
 
+    this.delete_experiment = function(experiment_id) {
+      var e = make_post_endpoint('/api/experiments/' + experiment_id + '/delete');
+      return e();
+    };
+
     this.get_experiment_info = function(experiment_id) {
       var e = make_get_endpoint('/api/experiments/' + experiment_id);
       return e();

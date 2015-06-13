@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('malignerViewerApp')
-  .controller('ListExperimentsCtrl', function ($scope, api, $modal, $state) {
+  .controller('ListExperimentsCtrl', function ($scope, api, $modal, $state, experimentDataService) {
 
 
     api.get_experiments().then(function(data) {
@@ -10,6 +10,15 @@ angular.module('malignerViewerApp')
 
     $scope.go_to_experiment = function(experimentId) {
       $state.go('experiment.home', {experimentId: experimentId});
+    };
+
+    $scope.delete_experiment = function(experimentId) {
+      
+      api.delete_experiment(experimentId).then(function() {
+        experimentDataService.clearExperimentData(experimentId);
+        $scope.experiments = $scope.experiments.filter(function(e) {return e.name !== experimentId; });
+      });
+
     };
 
     $scope.open_edit_modal = function(experiment) {
@@ -40,5 +49,25 @@ angular.module('malignerViewerApp')
 
 
     };
+
+
+    $scope.open_create_modal = function() {
+
+      var modalInstance = $modal.open({
+        animation: true,
+        templateUrl: 'views/experiment_create_modal.html',
+        controller: 'experimentCreateCtrl',
+        size: 'lg'
+      });
+
+      modalInstance.result.then(function (data) {
+        // Do something with data
+      }, function () {
+
+      });
+
+
+    };
+
 
   });

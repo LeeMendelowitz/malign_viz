@@ -9,7 +9,8 @@ var app = angular
     'ngStorage',
     'ngRoute',
     'ui.bootstrap',
-    'ngTable'
+    'ngTable',
+    'ngCookies'
   ]);
   // .config(function ($routeProvider, $locationProvider) {
 
@@ -53,15 +54,23 @@ app.run(
   ]
 );
 
+app.run(['$anchorScroll', function($anchorScroll) {
+  $anchorScroll.yOffset = 50;   // always scroll by 50 extra pixels
+}]);
+
 /////////////////////////////////////////////////////////////////////////////
 // Define Routes
 app.config(
   ['$stateProvider', '$urlRouterProvider',
     function ($stateProvider, $urlRouterProvider) {
 
-      $urlRouterProvider.otherwise('/experiments/list');
+      $urlRouterProvider.otherwise('main');
 
       $stateProvider
+        .state('home', {
+          url: '/home',
+          templateUrl: '/views/home.html'
+        })
         .state('experiments', {
           url: '/experiments',
           abstract: true,
@@ -137,62 +146,7 @@ app.config(
 
           }
         });
-        // .state('experiment.query.aln', {
-        //   url: '/alignment/:alnRank',
-
-
-        // });
-
-      // $stateProvider
-      //   .state('loading', {
-      //     parent: 'site',
-      //     templateUrl: '/views/loadingdata.html',
-      //     controller: 'LoadDataCtrl',
-      //     data: {
-      //       requireLogin: true
-      //     }
-      //   })
-      //   .state('teams', {   
-      //     parent: 'site',                 
-      //     url: '/teams',
-      //     templateUrl: '/views/teams.html',
-      //     controller: 'TeamCtrl',
-      //     data : {
-      //       requireLogin : true
-      //     }
-      //   })
-      //   .state('fxboxscores', {
-      //     parent: 'site',
-      //     url: '/fxboxscores',
-      //     abstract: true,
-      //     template: '<div ui-view></div>',
-      //   })
-      //   .state('fxboxscores.list', {
-      //     url: '/',
-      //     templateUrl: '/views/fxboxscores_list.html',
-      //     controller: 'FxBoxscoresCtrl',
-      //     data: {
-      //       requireLogin: true
-      //     }
-      //   })
-      //   .state('fxboxscores.detail', {
-      //     url: '/detail/:game_id',
-      //     templateUrl: '/views/fxboxscores_detail.html',
-      //     controller: 'FxBoxscoresDetailCtrl',
-      //     data: {
-      //       requireLogin: true
-      //     }
-      //   })
-      //   .state('pitchers.detail', {          
-      //     url: '/detail/:pitcherId',
-      //     views: {
-      //       "detail" : {
-      //         templateUrl: '/views/pitchermain.html',
-      //         controller: 'PitcherpageCtrl'
-      //       }
-      //     }
-      //   });
-
+        
     }
 
   ]);

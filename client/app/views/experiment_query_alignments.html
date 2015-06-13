@@ -1,4 +1,5 @@
 <div ng-repeat="aln in active_alignments track by aln.aln_rank">
+  <hr>
   <h4>Alignment {{aln.aln_rank}}</h4>
   <alignment query-map="queryMap" alignment-data="aln" experiment-id="experimentId"></alignment>
 </div>

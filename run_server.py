@@ -23,7 +23,7 @@ server.db.connect()
 
 app = Flask(__name__)
 app.register_blueprint(api_blueprint, url_prefix='/api')
-app.config.from_object(Config)
+app.config.from_object(DevelopmentConfig)
 
 @app.route('/')
 def root():

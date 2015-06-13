@@ -1,3 +1,10 @@
+<div class="header">
+  <h3 class="text-muted">{{queryId}}</h3>
+</ol>
+
+</div>
+
+
 <!-- <pre>
 {{ $stateParams }}
 </pre>
@@ -36,8 +43,6 @@
 </table>
 
 <map map-name={{ queryId }} map-data="queryMap"></map>
-
-<hr>
 
 <!-- Alignments Summary -->
 
@@ -87,10 +92,9 @@
     </tr>
 </table>
 
-<hr>
 
 <!-- View for active alignment or alignments -->
-<ui-view/>
+<ui-view autoscroll/>
 
 
 </div>

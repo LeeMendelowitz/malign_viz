@@ -1,0 +1,68 @@
+<div class="modal-header">
+    <h3 class="modal-title">Create Experiment</h3>
+</div>
+
+<form novalidate name="form">
+
+<div class="modal-body">
+
+<!--   <pre>
+  {{ experiment_info_form | json }}
+  </pre> -->
+
+  <p>Create a new experiment.</p>
+
+      <div class="form-group">
+        <label for="name_input">Name</label>
+        <input type="text" class="form-control" id="name_input" name="name_input" placeholder="Experiment name"
+        ng-model="experiment_info_form.name" required>
+        <div ng-show="form.$submitted || form.name_input.$touched">
+          <div ng-show="form.name_input.$error.required">This field is required.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description_input">Description</label>
+        <textarea rows="5" class="form-control" id="description_input" placeholder="Experiment Description"
+          ng-model="experiment_info_form.description"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="query_file_input">Query Input File</label>
+        <input type="file" id="query_file_input" name="query_file" accept=".json" file-model="query_file" required>
+        <p class="help-block">JSON file with query maps.</p>
+        <input type="hidden" ng-model="query_file" name="query_file_copy" required> <!-- To assist with angular form validation -->
+        <div ng-show="form.$submitted || form.query_file_copy.$touched">
+          <div ng-show="form.query_file_copy.$error.required">This field is required.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="ref_file_input">Reference Input File</label>
+        <input type="file" id="ref_file_input" name="ref_file" accept=".json" file-model="ref_file" required>
+        <p class="help-block">JSON file with reference maps.</p>
+        <input type="hidden" ng-model="ref_file" name="ref_file_copy" required> <!-- To assist with angular form validation -->
+        <div ng-show="form.$submitted || form.ref_file_copy.$touched">
+          <div ng-show="form.ref_file_copy.$error.required">This field is required.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="aln_file_input">Alignment Input File</label>
+        <input type="file" id="aln_file_input" name="aln_file" accept=".json" file-model="aln_file" required>
+        <p class="help-block">JSON file with alignments.</p>
+        <input type="hidden" ng-model="aln_file" name="aln_file_copy" required> <!-- To assist with angular form validation -->
+        <div ng-show="form.$submitted || form.aln_file_copy.$touched">
+          <div ng-show="form.aln_file_copy.$error.required">This field is required.</div>
+        </div>
+      </div>
+
+
+</div>
+
+<div class="modal-footer">
+    <input type="submit" class="btn btn-primary" ng-click="create_experiment()" value="Submit" />
+    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+</div>
+
+</form>

@@ -122,7 +122,7 @@ body {
   pointer-events: none;
   font-family: sans-serif;
   font-size: 12px;
-  border: 1px solid black;
+/*  border: 1px solid #ccc;*/
 }
 
 svg.chunk-alignment{

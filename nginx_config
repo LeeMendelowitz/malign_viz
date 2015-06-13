@@ -3,6 +3,8 @@ server {
     error_log /Users/Lee/workspace/nmaps/malign_viz/logs/nginx_error.log debug;
     rewrite_log on;
 
+    client_max_body_size 1024M;
+
     # This is the test server
     listen 8000;
 

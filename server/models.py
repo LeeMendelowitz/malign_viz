@@ -223,6 +223,15 @@ class Experiment(DictMixin, Document):
     collection_name = '%s.maps'%self.name
     return collection_name  
 
+  def delete(self, *args, **kwargs):
+    """Delete the experiment instance and related collections"""
+    with switch_collection(Alignment, self.alignment_collection) as A:
+      A.drop_collection()
+    with switch_collection(Map, self.map_collection) as M:
+      M.drop_collection()
+    Document.delete(self, *args, **kwargs)
+
+
   def ensure_related_indexes(self):
     with switch_collection(Alignment, self.alignment_collection) as A:
       A.ensure_indexes()
