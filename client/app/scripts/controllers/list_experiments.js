@@ -3,9 +3,12 @@
 angular.module('malignerViewerApp')
   .controller('ListExperimentsCtrl', function ($scope, api, $modal, $state, experimentDataService) {
 
+    $scope.alerts = [];
 
     api.get_experiments().then(function(data) {
       $scope.experiments = data.experiments || [];
+    }, function(data) {
+      $scope.alerts.push({type: 'danger', msg: data.msg || 'Error getting experiments.'});
     });
 
     $scope.go_to_experiment = function(experimentId) {
@@ -13,10 +16,13 @@ angular.module('malignerViewerApp')
     };
 
     $scope.delete_experiment = function(experimentId) {
-      
+
       api.delete_experiment(experimentId).then(function() {
         experimentDataService.clearExperimentData(experimentId);
         $scope.experiments = $scope.experiments.filter(function(e) {return e.name !== experimentId; });
+        $scope.alerts.push({ type: 'success', msg: 'Deleted experiment ' + experimentId });
+      }, function(data) {
+        $scope.alerts.push({type: 'danger', msg: data.msg || 'Error deleting experiment.'});
       });
 
     };
@@ -48,6 +54,7 @@ angular.module('malignerViewerApp')
       });
 
 
+
     };
 
 
@@ -65,9 +72,11 @@ angular.module('malignerViewerApp')
       }, function () {
 
       });
-
-
+      
     };
 
+    $scope.closeAlert = function(index) {
+      $scope.alerts.splice(index, 1);
+    };
 
   });

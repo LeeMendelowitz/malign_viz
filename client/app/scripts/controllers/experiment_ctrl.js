@@ -8,6 +8,8 @@ angular.module('malignerViewerApp')
     var experimentId = $stateParams.experimentId
     $scope.experimentId = experimentId;
 
+    $scope.alerts = [];
+
     var aligned_queries;
 
     var experiment_data;
@@ -68,6 +70,10 @@ angular.module('malignerViewerApp')
 
     };
 
+
+    $scope.closeAlert = function(index) {
+      $scope.alerts.splice(index, 1);
+    };
 
 
   });

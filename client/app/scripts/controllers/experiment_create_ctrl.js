@@ -12,6 +12,12 @@ angular.module('malignerViewerApp')
     $scope.query_file = "";
     $scope.ref_file = "";
 
+    $scope.alerts = [];
+
+    // $scope.alerts = [
+    //   { type: 'danger', msg: 'Oh snap! Change a few things up and try submitting again.' },
+    //   { type: 'success', msg: 'Well done! You successfully read this important alert message.' }
+    // ];
 
 
     $scope.create_experiment = function() {
@@ -33,16 +39,22 @@ angular.module('malignerViewerApp')
       api.update_experiment(form_data.name, form_data).then(function() {
 
         var data = undefined;
-        $modalInstance.close(data);
 
       }, function(data) {
 
         console.log("Could not update experiment data. " + data);
+        $scope.alerts.push({type: 'danger' , msg: data.msg || "Could not create experiment."});
 
       });
 
-      $scope.uploadFiles();
+      $scope.uploadFiles().then(function() {
+        var data = undefined;
+        $modalInstance.close(data);;
+      });
 
+      $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+      };
     };
 
 
@@ -57,7 +69,7 @@ angular.module('malignerViewerApp')
         var uploadUrl = '/api/upload_experiment_files/' + $scope.experiment_info_form.name;
 
         //src: https://uncorkedstudios.com/blog/multipartformdata-file-upload-with-angularjs
-        $http.post(uploadUrl, fd, {
+        var promise = $http.post(uploadUrl, fd, {
             transformRequest: angular.identity,
             headers: {'Content-Type': undefined}
         })
@@ -66,7 +78,10 @@ angular.module('malignerViewerApp')
         })
         .error(function(data){
           console.log("upload file error!", data);
+          $scope.alerts.push({type: 'danger', msg: data.msg || "Error while uploading files."});
         });
+
+        return promise;
 
     };
 

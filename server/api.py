@@ -69,7 +69,6 @@ def get_or_update_experiment(experiment_id):
 
 
 
-
 def experiment_info(experiment_id):
     """
     List a summary for a single experiment
@@ -136,29 +135,12 @@ def experiment_info_create_or_update(experiment_id):
 @api_blueprint.route('/create/experiment', methods=['POST', 'GET'])
 def create_experiment():
     logger.info("Received experiment create request")
-    logger.info("cookie keys: %s"%(str(request.cookies.keys())))
-
-    # TODO:
-    #
-    # Upload files to this location, specied by the experiment name cookie
-    # Then import the files using mongo import to the appropriate database collection
-    # based on the experiment name.
 
     try:
-        # import pdb; pdb.set_trace()
 
         data = request.form
         keys = data.keys()
         files = request.files
-
-        ################################################################
-        # Check the payload
-        # required_keys = ('description', 'name')
-        # for k in required_keys:
-        #     if k not in keys:
-        #         response = jsonify(msg="missing required keys")
-        #         response.status_code = 400
-        #         return response
 
         required_files = ('query_file', 'ref_file', 'aln_file')
         for k in required_files:
@@ -168,22 +150,12 @@ def create_experiment():
                 return response
 
         ################################################################
-
-        # name = data['name']
-        # description = data['description']
-
         # Save the uploaded files
         for f in required_files:
 
             file = request.files[f]
-
             filename = secure_filename(file.filename)
             file.save(os.path.join(UPLOAD_FOLDER, filename))
-
-
-        # Create the new experiment object.
-        # e = Experiment(name = name, description = description)
-        # e.save()
 
         return jsonify(msg = 'success')
 
@@ -217,9 +189,18 @@ def upload_experiment_files(experiment_id):
         os.makedirs(output_dir)
 
     saved_files = {}
+
     for f in required_files:
+
         file = request.files[f]
+
+        # This will remove spaces and other annoying stuff.
         output_filename = secure_filename(file.filename)
+
+        # Make sure file is not empty
+        if not output_filename:
+            return json_response('bad filename', 400)
+
         output_filename = os.path.join(output_dir, output_filename)
         file.save(output_filename)
         saved_files[f] = output_filename

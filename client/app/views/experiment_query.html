@@ -1,3 +1,10 @@
+<ol class="breadcrumb">
+  <li><a ui-sref="experiments.list">Experiments</a></li>
+  <li><a ui-sref="experiment.home({experimentId: experimentId})">{{experimentId}}</a></li>
+  <li class="active">{{queryId}}</li>
+</ol>
+
+
 <div class="header">
   <h3 class="text-muted">{{queryId}}</h3>
 </ol>
@@ -15,11 +22,6 @@
 <h1> {{experimentId}} </h1>
 
 <!-- QUERY MAP DETAILS -->
-<ol class="breadcrumb">
-  <li><a ui-sref="experiments.list">Experiments</a></li>
-  <li><a ui-sref="experiment.home({experimentId: experimentId})">{{experimentId}}</a></li>
-  <li class="active">{{queryId}}</li>
-</ol>
 
 <!-- <h3>Query</h3> -->
 

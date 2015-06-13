@@ -1,10 +1,16 @@
 <div class="header">
-  <h3 class="text-muted">Experiments</h3>
+
+  <h3 class="text-muted">Experiments
+    <button class="btn btn-md btn-success pull-right" ng-click="open_create_modal()">
+      <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+      Create</button>
+  </h3>
+
 </div>
 
-
-<button class="btn btn-sm btn-primary" ng-click="open_create_modal()">Create</button>
-
+    <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}
+    </alert>
+      
 <table class="table table-bordered">
   <thead>
     <th>Experiment</th>
@@ -20,19 +26,28 @@
       <td>{{exp.description}}</td>
       <td>{{exp.created | date : short }}</td>
       <td>
-        <button class="btn btn-sm btn-primary" ng-click="go_to_experiment(exp.name)">View</button>
+        <button class="btn btn-sm btn-primary" ng-click="go_to_experiment(exp.name)">
+          <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+          View
+        </button>
       </td>
       <td>
-        <button class="btn btn-sm btn-info" ng-click="open_edit_modal(exp)">Edit</button>
+        <button class="btn btn-sm btn-info" ng-click="open_edit_modal(exp)">
+          <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+          Edit
+        </button>
       </td>
       <td>
-        <button class="btn btn-sm btn-danger" ng-click="delete_experiment(exp.name)">Delete</button>
+        <button class="btn btn-sm btn-danger" ng-click="delete_experiment(exp.name)">     
+          <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+          Delete
+        </button>
       </td>
 
     </tr>
   </tbody>
 </table>
-
+<!-- 
 <pre>
 {{ experiments | json }}
-</pre>
+</pre> -->

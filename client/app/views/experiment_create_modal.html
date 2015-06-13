@@ -2,7 +2,7 @@
     <h3 class="modal-title">Create Experiment</h3>
 </div>
 
-<form novalidate name="form">
+<form name="form" novalidate>
 
 <div class="modal-body">
 
@@ -12,12 +12,17 @@
 
   <p>Create a new experiment.</p>
 
-      <div class="form-group" ng-class="{'has-error': (form.$submitted || form.name_input.$touched) && form.name_input.$error.required}">
+      <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}
+      </alert>
+
+
+      <div class="form-group" ng-class="{'has-error': (form.$submitted || form.name_input.$touched) && !form.name_input.$valid}">
         <label for="name_input">Name</label>
         <input type="text" class="form-control" id="name_input" name="name_input" placeholder="Experiment name"
-        ng-model="experiment_info_form.name" required>
+        ng-model="experiment_info_form.name" ng-required='true' no-space/>
         <div ng-show="form.$submitted || form.name_input.$touched">
           <div ng-show="form.name_input.$error.required" class="help-block">This field is required.</div>
+          <div ng-show="form.name_input.$error.noSpace" class="help-block">No spaces allowed.</div>
         </div>
       </div>
 
@@ -32,9 +37,9 @@
         <div ng-show="form.$submitted || form.query_file_input.$touched">
           <div ng-show="form.query_file_copy.$error.required" class="help-block">This field is required.</div>
         </div>
-        <input type="file" id="query_file_input" name="query_file" accept=".json" file-model="query_file" required>
         <p class="help-block">JSON file with query maps.</p>
-        <input type="hidden" ng-model="query_file" name="query_file_copy" required> <!-- To assist with angular form validation -->
+        <input type="file" id="query_file_input" name="query_file" accept=".json" file-model="query_file" ng-required='true'>
+        <input type="hidden" ng-model="query_file" name="query_file_copy" ng-required='true'> <!-- To assist with angular form validation -->
 
       </div>
 
@@ -43,9 +48,9 @@
         <div ng-show="form.$submitted || form.ref_file_copy.$touched">
           <div ng-show="form.ref_file_copy.$error.required" class="help-block">This field is required.</div>
         </div>
-        <input type="file" id="ref_file_input" name="ref_file" accept=".json" file-model="ref_file" required>
         <p class="help-block">JSON file with reference maps.</p>
-        <input type="hidden" ng-model="ref_file" name="ref_file_copy" required> <!-- To assist with angular form validation -->
+        <input type="file" id="ref_file_input" name="ref_file" accept=".json" file-model="ref_file" ng-required='true'>
+        <input type="hidden" ng-model="ref_file" name="ref_file_copy" ng-required='true'> <!-- To assist with angular form validation -->
 
       </div>
 
@@ -54,9 +59,9 @@
         <div ng-show="form.$submitted || form.ref_file_copy.$touched">
           <div ng-show="form.ref_file_copy.$error.required" class="help-block">This field is required.</div>
         </div>
-        <input type="file" id="aln_file_input" name="aln_file" accept=".json" file-model="aln_file" required>
         <p class="help-block">JSON file with alignments.</p>
-        <input type="hidden" ng-model="aln_file" name="aln_file_copy" required> <!-- To assist with angular form validation -->
+        <input type="file" id="aln_file_input" name="aln_file" accept=".json" file-model="aln_file" ng-required='true'>
+        <input type="hidden" ng-model="aln_file" name="aln_file_copy" ng-required='true' > <!-- To assist with angular form validation -->
         <div ng-show="form.$submitted || form.aln_file_copy.$touched">
           <div ng-show="form.aln_file_copy.$error.required" class="help-block">This field is required.</div>
         </div>
