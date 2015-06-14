@@ -217,7 +217,9 @@ def upload_experiment_files(experiment_id):
     if ret_code != 0:
         return json_response('error processing alignments file', 400)
 
-    return json_response('success')
+    # Success! Return a list of the list_
+    return list_experiments()
+    # return json_response('success')
 
 
 def import_maps_file(experiment_id, map_file):

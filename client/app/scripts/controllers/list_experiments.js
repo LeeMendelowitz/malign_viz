@@ -68,7 +68,8 @@ angular.module('malignerViewerApp')
       });
 
       modalInstance.result.then(function (data) {
-        // Do something with data
+        // Update the list of experiments
+        $scope.experiments = data.experiments || [];
       }, function () {
 
       });

@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('malignerViewerApp')
-  .controller('experimentCreateCtrl', function ($scope, $http, api, $modalInstance, $cookies, experimentDataService) {
+  .controller('experimentCreateCtrl', function ($scope, $http, api,
+    $modalInstance, $cookies, experimentDataService) {
     
     $scope.experiment_info_form = {
         "name" : "",
@@ -19,7 +20,6 @@ angular.module('malignerViewerApp')
     //   { type: 'success', msg: 'Well done! You successfully read this important alert message.' }
     // ];
 
-
     $scope.create_experiment = function() {
 
       console.log($scope.form);
@@ -31,6 +31,7 @@ angular.module('malignerViewerApp')
       // Strategy:
       // 1. Create the experiment by uploading the form with the experiment name and description.
       // 2. Upload the experiment files.
+      // 3. Then get the updated list of experiments.
 
       var form_data = $scope.experiment_info_form;
 
@@ -40,21 +41,25 @@ angular.module('malignerViewerApp')
 
         var data = undefined;
 
+        // Upload the files
+        $scope.uploadFiles().then(function() {
+
+          // Then get the updated list of experiments
+          api.get_experiments().then(function(data) {
+            $modalInstance.close(data);
+          }, function() {
+            $scope.alerts.push({type: 'danger', msg: "Could not get experiments."});
+          });
+
+        });
+
+
       }, function(data) {
 
-        console.log("Could not update experiment data. " + data);
         $scope.alerts.push({type: 'danger' , msg: data.msg || "Could not create experiment."});
 
       });
 
-      $scope.uploadFiles().then(function() {
-        var data = undefined;
-        $modalInstance.close(data);;
-      });
-
-      $scope.closeAlert = function(index) {
-        $scope.alerts.splice(index, 1);
-      };
     };
 
 
@@ -89,5 +94,8 @@ angular.module('malignerViewerApp')
       $modalInstance.dismiss('cancel');
     };
 
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+    };
 
   });
