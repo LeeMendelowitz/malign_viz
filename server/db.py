@@ -19,11 +19,11 @@ import models
 
 DB_NAME = "malign_viz"
 
-c = MongoClient()
-db = c[DB_NAME]
+# c = MongoClient()
+# db = c[DB_NAME]
 
-def get_db():
-  return db
+# def get_db():
+#   return db
 
 def connect():
   mongoengine.connect(DB_NAME)

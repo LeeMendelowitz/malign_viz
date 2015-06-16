@@ -7,6 +7,10 @@ import json
 from collections import Counter
 from types import NoneType
 import datetime
+from copy import deepcopy
+from common.logging_utils import create_logger
+
+logger = create_logger(__name__)
 
 
 class DictConversionError(Exception):
@@ -117,8 +121,8 @@ class MatchedChunk(DictMixin, EmbeddedDocument):
 
 
 
-class Alignment(DictMixin, Document):  
-  doc_type = StringField(default = 'alignment', required = True)
+class AlignmentBase(DictMixin):  
+  doc_type = StringField(default = 'alignment') # This field is deprecated
   experiment = StringField()
   query_num_frags = IntField()
   ref_misses = IntField()
@@ -135,6 +139,7 @@ class Alignment(DictMixin, Document):
   ref_start_bp = IntField()
   ref_end_bp = IntField()
   score = EmbeddedDocumentField(Score)
+  m_score = FloatField()
   query_id = StringField()
   query_num_sites = IntField()
   max_chunk_sizing_score = FloatField()
@@ -148,28 +153,49 @@ class Alignment(DictMixin, Document):
   rescaled_matched_chunks = ListField(field = EmbeddedDocumentField(MatchedChunk))
   rescaled_score = EmbeddedDocumentField(Score)
 
-  meta = {'collection': 'alignments',
-          'indexes' : [ ('query_id'),
-                        ('query_id', 'total_score_rescaled'),
-                        ('query_id', 'rescaled_score.sizing_score')
-                      ]}
+  # meta = {'collection': 'alignments',
+  #         'indexes' : [ ('query_id'),
+  #                       ('query_id', 'total_score_rescaled'),
+  #                       ('query_id', 'rescaled_score.sizing_score')
+  #                     ]}
 
   def __str__(self):
     return self.to_json()
 
+class Alignment(AlignmentBase, Document):
+  meta = {'collection': 'alignments',
+      'indexes' : [ ('query_id'),
+                    ('query_id', 'total_score_rescaled'),
+                    ('query_id', 'rescaled_score.sizing_score')
+                  ]}
+
+
+
+class AlignmentEmbedded(AlignmentBase, EmbeddedDocument):
+  pass
+
+
+class MapAlignmentSummary(DictMixin, EmbeddedDocument):
+  aln_count = IntField()
+  best_m_score = FloatField()
+  best_query_miss_rate = FloatField()
+  best_ref_miss_rate = FloatField()
+  best_query_scaling_factor = FloatField()
+  best_aln = EmbeddedDocumentField(AlignmentEmbedded)
 
 class Map(DictMixin, Document):
   """
   Representation of a Map (Rmap, Nmap, or Reference)
   for a single restriction enzyme.
   """
-  doc_type = StringField(default = 'map', required = True)
+  doc_type = StringField(default = 'map') # This field is deprecated
   experiment = StringField()
   name = StringField(primary_key = True)
   fragments = ListField(field = IntField()) # fragments
   num_fragments = IntField() # Number of fragments
   length = IntField() # Length in bp
   type = StringField(required = True, choices=("query", "reference"))
+  alignment_summary = EmbeddedDocumentField(MapAlignmentSummary)
 
   @classmethod
   def from_line(cls , line, map_type, experiment = None):
@@ -240,7 +266,7 @@ class Experiment(DictMixin, Document):
 
   def get_alignments(self):
     with switch_collection(Alignment, self.alignment_collection) as A:
-      A.ensure_indexes()
+      # A.ensure_indexes()
       return A.objects
 
   def get_alignments_for_query(self, query_id):
@@ -256,6 +282,7 @@ class Experiment(DictMixin, Document):
     ret['created'] = self.created
     ret['num_query_maps'] = len(self.get_query_map_ids())
     ret['num_ref_maps'] = len(self.get_ref_map_ids())
+
     with switch_collection(Alignment, self.alignment_collection) as A:
 
       A.ensure_indexes()
@@ -273,37 +300,72 @@ class Experiment(DictMixin, Document):
     return ret
 
   def get_maps(self):
-    with switch_collection(Map, self.map_collection) as A:
-      A.ensure_indexes()
-      return  A.objects
+    with switch_collection(Map, self.map_collection) as M:
+      M.ensure_indexes()
+      return  M.objects
 
   def get_query_map_ids(self):
     """Get a list of query ids"""
     # Select a list of distinct query_id's from the alignments
-    with switch_collection(Map, self.map_collection) as A:
-      A.ensure_indexes()
-      return A.objects.filter(type = 'query').distinct('name')
+    with switch_collection(Map, self.map_collection) as M:
+      M.ensure_indexes()
+      return M.objects.filter(type = 'query').distinct('name')
 
   def get_query_maps(self):
     """Get a list of query ids"""
     # Select a list of distinct query_id's from the alignments
-    with switch_collection(Map, self.map_collection) as A:
-      A.ensure_indexes()
-      return A.objects.filter(type = 'query')
+    with switch_collection(Map, self.map_collection) as M:
+      M.ensure_indexes()
+      return M.objects.filter(type = 'query')
 
   def get_ref_map_ids(self):
     """Get a list of ref ids"""
     # Select a list of distinct query_id's from the alignments
-    with switch_collection(Map, self.map_collection) as A:
-      A.ensure_indexes()
-      return A.objects.filter(type = 'reference').distinct('name')
+    with switch_collection(Map, self.map_collection) as M:
+      M.ensure_indexes()
+      return M.objects.filter(type = 'reference').distinct('name')
 
   def get_ref_maps(self):
     """Get a list of ref ids"""
     # Select a list of distinct query_id's from the alignments
-    with switch_collection(Map, self.map_collection) as A:
-      A.ensure_indexes()
-      return A.objects.filter(type = 'reference')
+    with switch_collection(Map, self.map_collection) as M:
+      M.ensure_indexes()
+      return M.objects.filter(type = 'reference')
+
+
+  def summarize_query_alignments(self):
+    """For each query, summarize the number and quality of alignments"""
+
+    query_maps = self.get_query_maps()
+    with switch_collection(Alignment, self.alignment_collection) as A, \
+         switch_collection(Map, self.map_collection) as M:
+
+      n = query_maps.count()
+      for i, q in enumerate(query_maps):
+        print 'working on map %i of %i %s'%(i+1, n, q.name)
+        aln_summary_doc = MapAlignmentSummary()
+        query_alns = A.objects.filter(query_id = q.name).order_by('total_score_rescaled')
+        aln_count = query_alns.count()
+        aln_summary_doc.aln_count = aln_count
+
+        if aln_count > 0:
+
+          best_aln = query_alns[0]
+
+          # Cast to Alignment Embedded
+          # best_aln = deepcopy(best_aln)
+          # best_aln.__class__ = AlignmentEmbedded
+          aln_summary_doc.best_aln = AlignmentEmbedded(**best_aln._data)
+          aln_summary_doc.best_m_score = best_aln.m_score
+          aln_summary_doc.best_query_miss_rate = best_aln.query_miss_rate
+          aln_summary_doc.best_ref_miss_rate = best_aln.ref_miss_rate
+          aln_summary_doc.best_query_scaling_factor = best_aln.query_scaling_factor
+
+
+        q.alignment_summary = aln_summary_doc
+        q.save()
+
+
 
 # class QueryMap(Map, Document):
 #   meta = {'collection' : 'query_maps',

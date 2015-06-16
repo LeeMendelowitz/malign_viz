@@ -61,7 +61,7 @@ def delete_experiment(experiment_id):
 
 @api_blueprint.route('/experiments/<experiment_id>', methods=['GET', 'POST'])
 def get_or_update_experiment(experiment_id):
-    logger.info("Received get or update request for experiment: %s"%experiment_id)
+    # logger.info("Received get or update request for experiment: %s"%experiment_id)
     if request.method == 'POST':
         return experiment_info_create_or_update(experiment_id)
     else:
@@ -94,7 +94,7 @@ def experiment_info_create_or_update(experiment_id):
     """
     Update information for a single experiment
     """
-    logger.info("Received experiment udpate request for experiment %s"%experiment_id)
+    logger.info("Received experiment udpate/create POST request for experiment %s"%experiment_id)
     logger.info("cookie keys: %s"%(str(request.cookies.keys())))
 
     try:
@@ -119,6 +119,7 @@ def experiment_info_create_or_update(experiment_id):
 
         e = Experiment(name = experiment_id, description = description)
         e.save()
+        e.ensure_related_indexes()
 
         return jsonify(msg = 'created')
 

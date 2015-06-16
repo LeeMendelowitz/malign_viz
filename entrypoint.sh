@@ -69,7 +69,7 @@ nginx
 # Start gunicorn
 echo "--------------------------------------------------------"
 echo "3. STARTING GUNICORN"
-gunicorn -w 2 run_server:app -b 127.0.0.1:8001 1>$LOG_DIR/gunicorn.stdout 2>$LOG_DIR/gunicorn.stderr &
+gunicorn -w 2 run_server:app -b 127.0.0.1:8001 -t 180 1>$LOG_DIR/gunicorn.stdout 2>$LOG_DIR/gunicorn.stderr &
 GUNICORN_PID=$!
 
 echo "GUNICORN PID: $GUNICORN_PID"
