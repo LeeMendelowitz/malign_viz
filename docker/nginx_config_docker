@@ -1,7 +1,8 @@
 server {
 
-    error_log /data/logs/nginx_error.log debug;
-    rewrite_log on;
+
+    access_log /data/logs/nginx.access.log combined;
+    error_log /data/logs/nginx.error.log;
 
     client_max_body_size 1024M;
 
@@ -23,3 +24,4 @@ server {
     ####################################################################################
 
 }
+

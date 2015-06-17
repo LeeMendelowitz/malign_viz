@@ -7,4 +7,4 @@ docker run \
     -v $WD:/app \
     --name malign_viz_temp \
     --entrypoint /bin/bash \
-    ubuntu:14.04
+    malign_viz:0.0

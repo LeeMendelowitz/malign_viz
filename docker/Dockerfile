@@ -34,7 +34,6 @@ RUN mkdir -p /data/logs /data/mongodb
 
 #############################
 # Move the Nginx configure file to the container
-
 COPY nginx_config_docker /etc/nginx/sites-available/default
 
 #############################
