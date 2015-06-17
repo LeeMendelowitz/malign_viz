@@ -288,12 +288,14 @@ class Experiment(DictMixin, Document):
       A.ensure_indexes()
       ret['num_alignments'] = A.objects.count()
 
-      # Get the number of alignments per query
-      alignments = A.objects.only('query_id')
-      query_id_counts = Counter(a.query_id for a in alignments)
-      aligned_queries = [{"query_id" : query_id, 
-                          "aln_count": aln_count} for query_id, aln_count in query_id_counts.iteritems()]
-      ret['aligned_queries'] = aligned_queries
+      # # Get the number of alignments per query
+      # alignments = A.objects.only('query_id')
+      # query_id_counts = Counter(a.query_id for a in alignments)
+      # aligned_queries = [{"query_id" : query_id, 
+      #                     "aln_count": aln_count} for query_id, aln_count in query_id_counts.iteritems()]
+      # ret['aligned_queries'] = aligned_queries
+
+    ret['aligned_queries'] = self.get_alignment_summary()
 
     # Get a list of query_ids with the number of alignments for each query.
     # Mongoengine does not have good aggregation support so do it here in memory.
@@ -333,8 +335,38 @@ class Experiment(DictMixin, Document):
       return M.objects.filter(type = 'reference')
 
 
+  def get_alignment_summary(self):
+    with switch_collection(Alignment, self.alignment_collection) as A:
+
+      A.ensure_indexes()
+
+      res = A.objects.aggregate(
+          { '$sort': { 'query_id': 1, 'total_score_rescaled': 1} },
+          { '$group': {
+              '_id': '$query_id',
+              'aln_count': { '$sum': 1},
+              'best_score': {'$first': '$total_score_rescaled'},
+              'best_m_score': {'$first': "$m_score"},
+              'best_query_miss_rate': {'$first': '$query_miss_rate'},
+              'best_ref_miss_rate': {'$first': '$ref_miss_rate'},
+              'best_query_scaling_factor' : {'$first': '$query_scaling_factor'}
+            }
+          },
+        allowDiskUse = True);
+
+      def fix_d(d):
+        # Remap _id to query_id
+        d['query_id'] = d['_id']
+        del d['_id']
+        return d
+
+      return [fix_d(d) for d in res]
+
   def summarize_query_alignments(self):
-    """For each query, summarize the number and quality of alignments"""
+    """For each query, summarize the number and quality of alignments
+    THIS METHOD IS TOO SLOW!
+    """
+    return
 
     query_maps = self.get_query_maps()
     with switch_collection(Alignment, self.alignment_collection) as A, \
@@ -361,11 +393,8 @@ class Experiment(DictMixin, Document):
           aln_summary_doc.best_ref_miss_rate = best_aln.ref_miss_rate
           aln_summary_doc.best_query_scaling_factor = best_aln.query_scaling_factor
 
-
         q.alignment_summary = aln_summary_doc
         q.save()
-
-
 
 # class QueryMap(Map, Document):
 #   meta = {'collection' : 'query_maps',

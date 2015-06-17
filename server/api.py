@@ -79,6 +79,7 @@ def experiment_info(experiment_id):
 
         e = Experiment.objects.filter(name = experiment_id).get()
         d = e.get_summary()
+        return jsonify(d)
 
     except (DoesNotExist, MultipleObjectsReturned) as e:
 
@@ -86,7 +87,6 @@ def experiment_info(experiment_id):
         response.status_code = 404
         return response
 
-    logger.debug("Response: " + str(d))
     return jsonify(d)
 
 
@@ -288,23 +288,23 @@ def experiment_references(experiment_id):
         response.status_code = 404
         return response
 
-@api_blueprint.route('/experiments/<experiment_id>/alignments')
-def experiment_alignments(experiment_id):
-    """
-    List all alignments from an experiment
-    """
-    logger.info("Received experiment alignments request for experiment %s"%experiment_id)
-    try:
+# @api_blueprint.route('/experiments/<experiment_id>/alignments')
+# def experiment_alignments(experiment_id):
+#     """
+#     List all alignments from an experiment
+#     """
+#     logger.info("Received experiment alignments request for experiment %s"%experiment_id)
+#     try:
 
-        e = Experiment.objects.filter(name = experiment_id).get()
-        alns = e.get_alignments()
-        return jsonify(alignments = [a.to_dict() for a in alns])
+#         e = Experiment.objects.filter(name = experiment_id).get()
+#         alns = e.get_alignments()
+#         return jsonify(alignments = [a.to_dict() for a in alns])
 
-    except (DoesNotExist, MultipleObjectsReturned) as e:
+#     except (DoesNotExist, MultipleObjectsReturned) as e:
 
-        response = jsonify()
-        response.status_code = 404
-        return response
+#         response = jsonify()
+#         response.status_code = 404
+#         return response
 
 @api_blueprint.route('/experiments/<experiment_id>/alignments/<query_id>')
 def experiment_alignments_for_query(experiment_id, query_id):

@@ -107,31 +107,8 @@ app.config(
             'queryId' : function($stateParams) {
               return $stateParams.queryId;
             },
-            'alignments' : function($stateParams, $q, $http) {
-
-              var deferred = $q.defer();
-
-              $http({method: 'GET', url: '/api/experiments/' + $stateParams.experimentId + '/alignments/' + $stateParams.queryId}).
-                success(function(data, status, headers, config) {
-
-                // this callback will be called asynchronously
-                // when the response is available
-                var alignments = data.alignments || [];
-
-                // Sort by alignment score and add alignment ranks.
-                alignments.sort(function(a1, a2) { return a1.total_score_rescaled - a2.total_score_rescaled; });
-
-                for(var i = 0; i < alignments.length; i++) {
-                  alignments[i]['aln_rank'] = i + 1;
-                }
-
-                deferred.resolve(alignments);
-
-              }).error(function(data) {
-                console.log("ERROR! ", data);
-              });
-
-              return deferred.promise;
+            'alignments' : function($stateParams, $q, $http, api) {
+              return api.get_alignments($stateParams.experimentId, $stateParams.queryId);
             }
           }
         })

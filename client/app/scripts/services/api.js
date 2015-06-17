@@ -95,6 +95,31 @@ angular.module('malignerViewerApp')
       return e(data);
     };
 
+    this.get_alignments = function(experiment_id, query_id) {
 
+      var deferred = $q.defer();
+
+      $http({method: 'GET', url: '/api/experiments/' + experiment_id + '/alignments/' + query_id}).
+          success(function(data, status, headers, config) {
+
+          // this callback will be called asynchronously
+          // when the response is available
+          var alignments = data.alignments || [];
+
+          // Sort by alignment score and add alignment ranks.
+          alignments.sort(function(a1, a2) { return a1.total_score_rescaled - a2.total_score_rescaled; });
+
+          for(var i = 0; i < alignments.length; i++) {
+            alignments[i]['aln_rank'] = i + 1;
+          }
+
+          deferred.resolve(alignments);
+
+        }).error(function(data) {
+          deferred.reject(data);
+        });
+
+        return deferred.promise;
+    };
 
   }]);
