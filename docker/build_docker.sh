@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t malign_viz:0.1 .
+docker build -t malign_viz:0.0.2 .

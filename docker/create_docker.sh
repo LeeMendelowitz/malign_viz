@@ -2,8 +2,7 @@
 WD=$(pwd)
 APP_DIR=$(cd ..; pwd)
 echo $APP_DIR
-docker run \
-    -ti \
+docker create \
     -P \
     -v $WD/entrypoint.sh:/entrypoint.sh:ro \
     -v $APP_DIR:/app:ro \

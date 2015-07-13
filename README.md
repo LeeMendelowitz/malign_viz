@@ -17,28 +17,36 @@ change into the repository working directory.
 
 ```bash
 # Build the docker image
-cd REPO_DIR
+cd REPO_DIR/docker
 ./build_docker.sh 
 ```
 
 This will install all MalignViz dependencies inside of a Docker container
 based off of Ubuntu 14.04. This may take some time.
 
-### Creating & Running the Docker Container
+### Create the Docker Container
 
-Execute the `run_docker.sh` script to create and run a MalignViz Docker container. Note: You
+Execute the `create_docker.sh` script to create a MalignViz Docker container. Note: You
 must first change into the repository working directory.
 
 ```bash
-cd REPO_DIR
-./run_docker.sh
+cd REPO_DIR/docker
+./create_docker.sh
+```
+
+### Starting the Docker Container
+
+Execute the `start_docker.sh` script to start the MalignViz Docker container.
+
+```bash
+REPO_DIR/docker/start_docker.sh
 ```
 
 ### Open MalignViz in your browser
 
 To see what port the MalignViz webserver is exposed on, use `docker port`:
 
-``bash
+```bash
 docker port malign_viz
 ```
 
@@ -58,11 +66,3 @@ use the IP address of the `boot2docker` VM, which you can determine using the co
 
 To stop MalignViz, type `CTRL + C` in the terminal running MalignViz, or
 execute `docker stop malign_viz` in a separate terminal.
-
-### Starting MalignViz (again)
-
-To start MalignViz again, start the existing Docker container:
-
-```bash
-docker start malign_viz
-```
