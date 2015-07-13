@@ -1,7 +1,7 @@
 FROM ubuntu:14.04
 MAINTAINER Lee Mendelowitz <Lee.Mendelowitz@gmail.com>
 
-ENV DEBIAN_FRONTEND noninteractive
+# ENV DEBIAN_FRONTEND noninteractive
 
 #############################
 # Install MongoDB
