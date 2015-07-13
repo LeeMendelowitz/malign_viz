@@ -8,7 +8,7 @@ daemon on Linux, Mac OS X, Windows, and other platforms.
 
 ## Installation
 
-First, you need to install Docker.
+First, you need to install [Docker](www.docker.io).
 
 ### Building the Docker image.
 
